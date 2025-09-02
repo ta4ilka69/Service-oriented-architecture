@@ -4,6 +4,8 @@
 
 ### How to run
 
+Run from the root of the project
+
 ```shell
 python -m http.server ${port}
 ```
