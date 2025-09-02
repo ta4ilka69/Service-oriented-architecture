@@ -5,5 +5,11 @@ info:
     **OpenAPI** specification for **Laboratory work №1** of **Service-oriented architecture** at **ITMO-University**.
   contact:
     name: Roman Kobelev & Balin Artem
-    url: 
+    url: https://github.com/ta4ilka69/Service-oriented-architecture
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: 0.0.1
+servers:
+  - url: https://se.ifmo.ru
+    description: Helios
