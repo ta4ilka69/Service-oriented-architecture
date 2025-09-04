@@ -29,7 +29,7 @@ paths:
       parameters:
         - name: sort
           in: query
-          description: Fields to sort by. Prefix with '-' for descending order.
+          description: Fields to sort by. Prefix with '-' for descending order. If field is used multiple times (both with and without prefix), the last occurrence takes precedence.
           required: false
           schema:
             $ref: '#/components/schemas/SortOrder'
@@ -349,6 +349,8 @@ components:
   schemas:
     Album:
       type: object
+      xml:
+        name: album
       properties:
         name:
           type: string
