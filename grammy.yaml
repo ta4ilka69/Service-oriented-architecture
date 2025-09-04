@@ -15,16 +15,9 @@ servers:
     description: Helios
 paths:
   /band/{band-id}/singles/add:
-    put:
+    post:
       summary: Add a single to the band
-      description: Add a single to the band
-      parameters:
-        - name: band-id
-          in: path
-          required: true
-          schema:
-            type: number
-            format: int32
+      description: Add a single to the band. Accepts a string in body
       requestBody:
         required: true
         content:
@@ -32,8 +25,8 @@ paths:
             schema:
               $ref: '#/components/schemas/SingleSchema'
       responses:
-        '200':
-          description: Return created single
+        '201':
+          description: Created. Returns created object
           content:
             application/xml:
               schema:
@@ -44,20 +37,15 @@ paths:
             application/xml:
               schema:
                 $ref: './music.yaml#/components/schemas/Error'
+      parameters:
+        - $ref: '#/components/parameters/BandId'
   /band/{band-id}/participants/add:
     post:
       summary: Add a participant to the band
       description: Add a participant to the band
-      parameters:
-        - name: band-id
-          in: path
-          required: true
-          schema:
-            type: number
-            format: int32
       responses:
-        '200':
-          description: Return music band
+        '201':
+          description: Created. Returns created object
           content:
             application/xml:
               schema:
@@ -68,6 +56,8 @@ paths:
             application/xml:
               schema:
                 $ref: './music.yaml#/components/schemas/Error'
+      parameters:
+        - $ref: '#/components/parameters/BandId'
 components:
   schemas:
     SingleSchema:
@@ -77,3 +67,11 @@ components:
           type: string
       required:
         - name
+  parameters:
+    BandId:
+      name: band-id
+      in: path
+      required: true
+      schema:
+        type: number
+        format: int32
