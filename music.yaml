@@ -32,7 +32,9 @@ paths:
           description: Fields to sort by. Prefix with '-' for descending order. If field is used multiple times (both with and without prefix), the last occurrence takes precedence.
           required: false
           schema:
-            $ref: '#/components/schemas/SortOrder'
+            type: array
+            items:
+              $ref: '#/components/schemas/SortValues'
 
         - name: page
           in: query
@@ -436,35 +438,6 @@ components:
           type: string
           example: Internal Server Error
 
-    SortOrder:
-      type: array
-      items:
-        type: string
-        default: id
-        enum:
-          - id
-          - -id
-          - name
-          - -name
-          - coordinates.x
-          - -coordinates.x
-          - coordinates.y
-          - -coordinates.y
-          - creationDate
-          - -creationDate
-          - numberOfParticipants
-          - -numberOfParticipants
-          - albumsCount
-          - -albumsCount
-          - description
-          - -description
-          - genre
-          - -genre
-          - bestAlbum.name
-          - -bestAlbum.name
-          - bestAlbum.tracks
-          - -bestAlbum.tracks
-
     FilterCondition:
       type: string
       pattern: '^((name|creationDate|description|genre|bestAlbum\.name)(>=|<|>|<=|!=|==|^=|$=|@=).+)|(coordinates\.x(>=|<=|>|<|!=|==)-?\d+(\.\d+)?|(id|coordinates\.y|numberOfParticipants|albumsCount|bestAlbum\.tracks)(>=|<=|>|<|!=|==)-?\d+)$'
@@ -473,6 +446,10 @@ components:
         - albumsCount>5
         - coordinates.x<=100.5
         - description@=rock
+
+    SortValues:
+      type: string
+      pattern: '^(id|-id|name|-name|coordinates\.x|-coordinates\.x|coordinates\.y|-coordinates\.y|creationDate|-creationDate|numberOfParticipants|-numberOfParticipants|albumsCount|-albumsCount|description|-description|genre|-genre|bestAlbum\.name|-bestAlbum\.name|bestAlbum\.tracks|-bestAlbum\.tracks)$'
 
     PatchOption:
       type: string
