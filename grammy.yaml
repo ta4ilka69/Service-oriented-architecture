@@ -3,27 +3,34 @@ info:
   title: Grammy Service Endpoints - OpenAPI 3.1.1
   description: |-
     **OpenAPI** specification for **Laboratory work №1** of **Service-oriented architecture** at **ITMO-University**.
+
   contact:
     name: Roman Kobelev & Balin Artem
     url: https://github.com/ta4ilka69/Service-oriented-architecture
+
   license:
     name: The MIT License
     url: https://mit-license.org/
+
   version: 0.0.1
+
 servers:
   - url: 'https://localhost:5252/api/v1/grammy'
     description: Helios
+
 paths:
   /band/{band-id}/singles/add:
     post:
       summary: Add a single to the band
       description: Add a single to the band. Accepts a string in body
+
       requestBody:
         required: true
         content:
           application/xml:
             schema:
               $ref: '#/components/schemas/SingleSchema'
+
       responses:
         '201':
           description: Created. Returns created object
@@ -31,18 +38,27 @@ paths:
             application/xml:
               schema:
                 $ref: './music.yaml#/components/schemas/Album'
+
         default:
           description: Returns error code, message and time in case of error
           content:
             application/xml:
               schema:
                 $ref: './music.yaml#/components/schemas/Error'
+
       parameters:
-        - $ref: '#/components/parameters/BandId'
+        - name: band-id
+          in: path
+          description: ID of the band to add a participant to
+          required: true
+          schema:
+            $ref: './music.yaml#/components/schemas/MusicBandId'
+
   /band/{band-id}/participants/add:
     post:
       summary: Add a participant to the band
       description: Add a participant to the band
+
       responses:
         '201':
           description: Created. Returns created object
@@ -50,14 +66,29 @@ paths:
             application/xml:
               schema:
                 $ref: './music.yaml#/components/schemas/MusicBand'
+
         default:
           description: Returns error code and message in case of error
           content:
             application/xml:
               schema:
                 $ref: './music.yaml#/components/schemas/Error'
+
       parameters:
-        - $ref: '#/components/parameters/BandId'
+        - name: band-id
+          in: path
+          description: ID of the band to add a participant to
+          required: true
+          schema:
+            $ref: './music.yaml#/components/schemas/MusicBandId'
+
+      requestBody:
+        required: true
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ParticipantSchema'
+
 components:
   schemas:
     SingleSchema:
@@ -65,13 +96,20 @@ components:
       properties:
         name:
           type: string
+          xml:
+            name: name
       required:
         - name
-  parameters:
-    BandId:
-      name: band-id
-      in: path
-      required: true
-      schema:
-        type: number
-        format: int32
+    ParticipantSchema:
+      type: object
+      properties:
+        name:
+          description: Имя нового участника.
+          type: string
+          minLength: 1
+        role:
+          description: Роль участника в группе (необязательно).
+          type: string
+          enum: [Vocalist, Guitarist, Bassist, Drummer, Keyboardist]
+      required:
+        - name
