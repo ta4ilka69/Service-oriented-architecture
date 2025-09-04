@@ -72,6 +72,7 @@ paths:
                 type: array
                 xml:
                   name: musicBands
+                  wrapped: true
                 items:
                   $ref: '#/components/schemas/MusicBand'
 
