@@ -13,3 +13,102 @@ info:
 servers:
   - url: https://se.ifmo.ru
     description: Helios
+components:
+  schemas:
+    MusicGenre:
+      type: string
+      enum:
+        - PSYCHEDELIC_CLOUD_RAP
+        - SOUL
+        - POP
+      nullable: true
+      example: POP
+    Album:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Demon Days
+        tracks:
+          type: number
+          format: int64
+          minimum: 0
+          exclusiveMinimum: true
+          example: 15
+    Coordinates:
+      type: object
+      properties:
+        x:
+          type: number
+          format: float
+          minimum: -975
+          exclusiveMinimum: true
+          example: 123.45
+        y:
+          type: number
+          format: int64
+          nullable: true
+          example: 400
+    MusicBandSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Gorillaz
+        coordinates:
+          $ref: "#/components/schemas/Coordinates"
+        numberOfParticipants:
+          type: number
+          format: int32
+          minimum: 0
+          exclusiveMinimum: true
+          example: 2
+        albumsCount:
+          type: number
+          format: int32
+          minimum: 0
+          exclusiveMinimum: true
+          example: 8
+        description:
+          type: string
+          example: Gorillaz are an English virtual band created by musician Damon Albarn and artist Jamie Hewlett in London, England, in 1998.
+        genre:
+          $ref: "#/components/schemas/MusicGenre"
+        bestAlbum:
+          nullable: true
+          $ref: "#/components/schemas/Album"
+    MusicBandAllSchema:
+      allOf:
+        - $ref: "#/components/schemas/MusicBandSchema"
+        - type: object
+          properties:
+            id:
+              type: number
+              format: int32
+              minimum: 0
+              exclusiveMinimum: true
+              example: 1
+            creationDate:
+              type: string
+              format: date-time
+              example: 1998-01-01T00:00:00Z
+    Error:
+      type: object
+      required:
+        - httpCode
+        - message
+        - time
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 500
+        message:
+          type: string
+          example: Internal Server Error
+        time:
+          type: string
+          format: date-time
+          example: 2025-09-04T00:00:09Z
+
+
