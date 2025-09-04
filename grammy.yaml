@@ -40,7 +40,7 @@ paths:
                 $ref: './music.yaml#/components/schemas/Album'
 
         default:
-          description: Returns error code, message and time in case of error
+          description: Returns error code and message in case of error
           content:
             application/xml:
               schema:
@@ -55,6 +55,7 @@ paths:
             $ref: './music.yaml#/components/schemas/MusicBandId'
 
   /band/{band-id}/participants/add:
+  # Логически правильный запрос, но модели Participant в варианте нет
     post:
       summary: Add a participant to the band
       description: Add a participant to the band
@@ -88,6 +89,33 @@ paths:
           application/xml:
             schema:
               $ref: '#/components/schemas/ParticipantSchema'
+    # Запрос в соответствии с вариантом
+    patch:
+      summary: Add a participant to the band
+      description: Add a participant to the band
+
+      responses:
+        '201':
+          description: Created. Returns created object
+          content:
+            application/xml:
+              schema:
+                $ref: './music.yaml#/components/schemas/MusicBand'
+
+        default:
+          description: Returns error code and message in case of error
+          content:
+            application/xml:
+              schema:
+                $ref: './music.yaml#/components/schemas/Error'
+
+      parameters:
+        - name: band-id
+          in: path
+          description: ID of the band to add a participant to
+          required: true
+          schema:
+            $ref: './music.yaml#/components/schemas/MusicBandId'
 
 components:
   schemas:
