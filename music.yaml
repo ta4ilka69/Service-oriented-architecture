@@ -91,7 +91,7 @@ components:
     Error:
       type: object
       required:
-        - httpCode
+        - code
         - message
       properties:
         code:
