@@ -1,18 +1,349 @@
 openapi: 3.1.1
+
 info:
   title: Musicband Service Endpoints - OpenAPI 3.1.1
+
   description: |-
     **OpenAPI** specification for **Laboratory work №1** of **Service-oriented architecture** at **ITMO-University**.
+
   contact:
     name: Roman Kobelev & Balin Artem
     url: https://github.com/ta4ilka69/Service-oriented-architecture
+
   license:
     name: The MIT License
     url: https://mit-license.org/
+
   version: 0.0.1
+
 servers:
   - url: https://se.ifmo.ru
     description: Helios
+
+paths:
+  /music-bands:
+    get:
+      summary: Get list of musicbands.
+      description: Get list of musicbands with possible filtering, sorting and pagination.
+
+      parameters:
+        - name: sort
+          in: query
+          description: Fields to sort by. Prefix with '-' for descending order.
+          required: false
+          schema:
+            $ref: '#/components/schemas/SortOrder'
+
+        - name: page
+          in: query
+          description: Page number. If provided, size must also be provided. Otherwise, page is ignored.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            default: 1
+
+        - name: size
+          in: query
+          description: Number of items per page. If page is provided, size must also be provided. Otherwise, size is ignored.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            default: 10
+
+        - name: filter
+          in: query
+          description: Filter conditions in the format field(>=|<=|>|<|!=|==|^=|$=|@=)value. "^=" is for prefix matching, "$=" is for suffix matching, and "@=" is for substring matching. If a non-numeric field is used with a numeric operator or date format is invalid, an error is returned.
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/FilterCondition'
+
+      responses:
+        '200':
+          description: A list of musicbands.
+          content:
+            application/xml:
+              schema:
+                type: array
+                xml:
+                  name: musicBands
+                items:
+                  $ref: '#/components/schemas/MusicBand'
+
+        '400':
+          description: Bad Request - Invalid query parameters.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Create a new musicband.
+      description: Create a new musicband with the provided details.
+
+      requestBody:
+        description: Musicband to add.
+        required: true
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/MusicBand'
+
+      responses:
+        '201':
+          description: Musicband created successfully.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MusicBand'
+
+        '400':
+          $ref: '#/components/responses/BadRequestInvalidInput'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /music-bands/{id}:
+    get:
+      summary: Get a musicband by ID.
+      description: Retrieve a single musicband by its unique ID.
+
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier of the musicband.
+          required: true
+          schema:
+            $ref: '#/components/schemas/MusicBandId'
+
+      responses:
+        '200':
+          description: A single musicband.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MusicBand'
+
+        '400':
+          $ref: '#/components/responses/BadRequestInvalidID'
+
+        '404':
+          $ref: '#/components/responses/MusicBandNotFound'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      summary: Update an existing musicband (with all fields).
+      description: Update an existing musicband by its ID. All fields must be provided. Missing fields will be set to null.
+
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier of the musicband to update.
+          required: true
+          schema:
+            $ref: '#/components/schemas/MusicBandId'
+
+      requestBody:
+        description: Updated musicband details.
+        required: true
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/MusicBand'
+
+      responses:
+        '200':
+          description: Musicband updated successfully.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MusicBand'
+
+        '400':
+          $ref: '#/components/responses/BadRequestInvalidInput'
+
+        '404':
+          $ref: '#/components/responses/MusicBandNotFound'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Delete a musicband by ID.
+      description: Delete a single musicband by its unique ID.
+
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier of the musicband to delete.
+          required: true
+          schema:
+            $ref: '#/components/schemas/MusicBandId'
+
+      responses:
+        '204':
+          description: Musicband deleted successfully. No content returned.
+
+        '400':
+          $ref: '#/components/responses/BadRequestInvalidID'
+
+        '404':
+          $ref: '#/components/responses/MusicBandNotFound'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Partially update a musicband by ID.
+      description: Update one or more fields of an existing musicband by its ID. Only the provided fields will be updated; other fields will remain unchanged.
+
+      parameters:
+        - name: id
+          in: path
+          description: The unique identifier of the musicband to update.
+          required: true
+          schema:
+            $ref: '#/components/schemas/MusicBandId'
+      requestBody:
+        description: Fields to update in the musicband.
+        required: true
+        content:
+          application/xml:
+            schema:
+              type: array
+              xml:
+                name: fields
+                wrapped: true
+              items:
+                $ref: '#/components/schemas/PatchOption'
+      responses:
+        '200':
+          description: Musicband updated successfully.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MusicBand'
+
+        '400':
+          $ref: '#/components/responses/BadRequestInvalidInput'
+
+        '404':
+          $ref: '#/components/responses/MusicBandNotFound'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /music-bands/all-with-description:
+    delete:
+      summary: Delete all musicbands with a specific description.
+      description: Delete all musicbands whose description matches the provided value.
+
+      parameters:
+        - name: description
+          in: query
+          description: The description to filter musicbands for deletion.
+          required: true
+          schema:
+            $ref: '#/components/schemas/MusicBandDescription'
+
+      responses:
+        '204':
+          description: Musicbands deleted successfully. No content returned.
+
+        '400':
+          description: Bad Request - Missing or invalid description parameter.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /music-bands/one-with-genre:
+    delete:
+      summary: Delete one musicband with a specific genre.
+      description: Delete one random musicband whose genre matches the provided value.
+
+      parameters:
+        - name: genre
+          in: query
+          description: The genre to filter musicbands for deletion.
+          required: true
+          schema:
+            $ref: '#/components/schemas/MusicBandGenre'
+
+      responses:
+        '204':
+          description: Musicband deleted successfully. No content returned.
+
+        '400':
+          description: Bad Request - Missing or invalid genre parameter.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /music-bands/count-greater-than-best-album:
+    get:
+      summary: Count musicbands with best album greater than provided.
+      description: Get the count of musicbands whose best album has more tracks than the specified number.
+
+      parameters:
+        - name: albumName
+          in: query
+          required: true
+          description: The name of the album to compare against.
+          xml:
+            name: albumName
+          schema:
+            type: string
+            minLength: 1
+        - name: albumTracks
+          in: query
+          xml:
+            name: albumTracks
+          required: true
+          description: The number of tracks in the album to compare against.
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+
+      responses:
+        '200':
+          description: Count of musicbands with best album tracks greater than the specified number.
+          content:
+            application/xml:
+              schema:
+                xml:
+                  name: count
+                type: integer
+                format: int64
+                example: 5
+
+        '400':
+          description: Bad Request - Missing or invalid tracks parameter.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
 components:
   schemas:
     Album:
@@ -28,6 +359,7 @@ components:
       required:
         - name
         - tracks
+
     Coordinates:
       type: object
       properties:
@@ -42,6 +374,7 @@ components:
       required:
         - x
         - y
+
     MusicBand:
       type: object
       xml:
@@ -68,14 +401,9 @@ components:
           format: int32
           minimum: 1
         description:
-          type: string
-          minLength: 0
+          $ref: '#/components/schemas/MusicBandDescription'
         genre:
-          type: string
-          enum:
-            - PSYCHEDELIC_CLOUD_RAP
-            - SOUL
-            - POP
+          $ref: '#/components/schemas/MusicBandGenre'
         bestAlbum:
           $ref: '#/components/schemas/Album'
           nullable: true
@@ -88,11 +416,14 @@ components:
         - albumsCount
         - description
         - genre
+
     Error:
       type: object
       required:
         - code
         - message
+      xml:
+        name: error
       properties:
         code:
           type: integer
@@ -101,3 +432,92 @@ components:
         message:
           type: string
           example: Internal Server Error
+
+    SortOrder:
+      type: array
+      items:
+        type: string
+        default: id
+        enum:
+          - id
+          - -id
+          - name
+          - -name
+          - coordinates.x
+          - -coordinates.x
+          - coordinates.y
+          - -coordinates.y
+          - creationDate
+          - -creationDate
+          - numberOfParticipants
+          - -numberOfParticipants
+          - albumsCount
+          - -albumsCount
+          - description
+          - -description
+          - genre
+          - -genre
+          - bestAlbum.name
+          - -bestAlbum.name
+          - bestAlbum.tracks
+          - -bestAlbum.tracks
+
+    FilterCondition:
+      type: string
+      pattern: '^((name|creationDate|description|genre|bestAlbum\.name)(>=|<|>|<=|!=|==|^=|$=|@=).+)|(coordinates\.x(>=|<=|>|<|!=|==)-?\d+(\.\d+)?|(id|coordinates\.y|numberOfParticipants|albumsCount|bestAlbum\.tracks)(>=|<=|>|<|!=|==)-?\d+)$'
+      examples:
+        - name==The Beatles
+        - albumsCount>5
+        - coordinates.x<=100.5
+        - description@=rock
+
+    PatchOption:
+      type: string
+      xml:
+        name: field
+      pattern: '^((name|creationDate|description|genre|bestAlbum\.name)=.+)|(coordinates\.x=-?\d+(\.\d+)?|(id|coordinates\.y|numberOfParticipants|albumsCount|bestAlbum\.tracks)=-?\d+)$'
+
+    MusicBandId:
+      type: integer
+      format: int32
+      minimum: 1
+
+    MusicBandDescription:
+      type: string
+      minLength: 0
+
+    MusicBandGenre:
+      type: string
+      enum:
+        - PSYCHEDELIC_CLOUD_RAP
+        - SOUL
+        - POP
+
+  responses:
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    MusicBandNotFound:
+      description: Not Found - Musicband not found.
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    BadRequestInvalidID:
+      description: Bad Request - Invalid ID supplied.
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    BadRequestInvalidInput:
+      description: Bad Request - Invalid input.
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
