@@ -28,20 +28,20 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/xml:
             schema:
               $ref: '#/components/schemas/SingleSchema'
       responses:
         '200':
           description: Return created single
           content:
-            application/json:
+            application/xml:
               schema:
                 $ref: './music.yaml#/components/schemas/Album'
         default:
           description: Returns error code, message and time in case of error
           content:
-            application/json:
+            application/xml:
               schema:
                 $ref: './music.yaml#/components/schemas/Error'
   /band/{band-id}/participants/add:
@@ -59,13 +59,13 @@ paths:
         '200':
           description: Return music band
           content:
-            application/json:
+            application/xml:
               schema:
                 $ref: './music.yaml#/components/schemas/MusicBand'
         default:
           description: Returns error code and message in case of error
           content:
-            application/json:
+            application/xml:
               schema:
                 $ref: './music.yaml#/components/schemas/Error'
 components:
@@ -75,4 +75,5 @@ components:
       properties:
         name:
           type: string
-          required: true
+      required:
+        - name
