@@ -436,10 +436,27 @@ components:
         code:
           type: integer
           format: int32
-          example: 500
         message:
           type: string
-          example: Internal Server Error
+    
+    InternalServerError:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            code:
+              example: 500
+            message:
+              example: Internal Server Error
+    NotFoundError:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            code:
+              example: 404
+            message:
+              example: Not Found Error
 
     FilterCondition:
       type: string
@@ -482,14 +499,14 @@ components:
       content:
         application/xml:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/InternalServerError'
 
     MusicBandNotFound:
       description: Not Found - Musicband not found.
       content:
         application/xml:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/NotFoundError'
 
     BadRequestInvalidID:
       description: Bad Request - Invalid ID supplied.
