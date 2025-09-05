@@ -222,12 +222,7 @@ paths:
         content:
           application/xml:
             schema:
-              type: array
-              xml:
-                name: fields
-                wrapped: true
-              items:
-                $ref: '#/components/schemas/PatchOption'
+              $ref: '#/components/schemas/MusicBandPatch'
       responses:
         '200':
           description: Musicband updated successfully.
@@ -424,6 +419,31 @@ components:
               format: date
       xml:
         name: musicBandAllSchema
+    MusicBandPatch:
+      type: object
+      xml:
+        name: musicBand
+      properties:
+        name:
+          type: string
+          minLength: 1
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        numberOfParticipants:
+          type: integer
+          format: int32
+          minimum: 1
+        albumsCount:
+          type: integer
+          format: int32
+          minimum: 1
+        description:
+          $ref: '#/components/schemas/MusicBandDescription'
+        genre:
+          $ref: '#/components/schemas/MusicBandGenre'
+        bestAlbum:
+          $ref: '#/components/schemas/Album'
+          nullable: true
 
     Error:
       type: object
