@@ -192,7 +192,8 @@ paths:
 
         '404':
           $ref: '#/components/responses/MusicBandNotFound'
-
+        '422':
+          $ref: '#/components/responses/InvalidIdFormat'
         '500':
           $ref: '#/components/responses/InternalServerError'
         default:
@@ -222,7 +223,8 @@ paths:
 
         '404':
           $ref: '#/components/responses/MusicBandNotFound'
-
+        '422':
+          $ref: '#/components/responses/InvalidIdFormat'
         '500':
           $ref: '#/components/responses/InternalServerError'
         default:
@@ -263,7 +265,8 @@ paths:
 
         '404':
           $ref: '#/components/responses/MusicBandNotFound'
-
+        '422':
+          $ref: '#/components/responses/InvalidIdFormat'
         '500':
           $ref: '#/components/responses/InternalServerError'
         default:
