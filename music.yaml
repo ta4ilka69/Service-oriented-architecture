@@ -270,7 +270,7 @@ paths:
   /music-bands/one-with-genre:
     delete:
       summary: Delete one musicband with a specific genre.
-      description: Delete one random musicband whose genre matches the provided value.
+      description: Delete one random musicband whose genre matches the provided value. Input is case-sencetive.
 
       parameters:
         - name: genre
@@ -294,10 +294,10 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /music-bands/count-greater-than-best-album:
+  /music-bands/count-best-album:
     get:
       summary: Count musicbands with best album greater than provided.
-      description: Get the count of musicbands whose best album has more tracks than the specified number.
+      description: Get the count of musicbands whose best album has more tracks than the specified number. If equals, uses alphabetical comparison of the names.
 
       parameters:
         - name: albumName
