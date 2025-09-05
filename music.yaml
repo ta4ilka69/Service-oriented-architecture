@@ -243,7 +243,7 @@ paths:
   /music-bands/all-with-description:
     delete:
       summary: Delete all musicbands with a specific description.
-      description: Delete all musicbands whose description matches the provided value.
+      description: Delete all musicbands whose description matches the provided value. If nothing is deleted, it means success too.
 
       parameters:
         - name: description
@@ -270,7 +270,7 @@ paths:
   /music-bands/one-with-genre:
     delete:
       summary: Delete one musicband with a specific genre.
-      description: Delete one random musicband whose genre matches the provided value. Input is case-sencetive.
+      description: Delete one random musicband whose genre matches the provided value. Input is case-sencetive. If nothing is deleted, it means success too.
 
       parameters:
         - name: genre
