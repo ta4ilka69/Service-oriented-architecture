@@ -49,7 +49,7 @@ paths:
       parameters:
         - name: band-id
           in: path
-          description: ID of the band to add a participant to
+          description: ID of the band to add a single to
           required: true
           schema:
             $ref: './music.yaml#/components/schemas/MusicBandId'
@@ -67,7 +67,21 @@ paths:
             application/xml:
               schema:
                 $ref: './music.yaml#/components/schemas/MusicBand'
-
+        '400':
+          description: Bad Request - Missing or invalid tracks parameter.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Band with this ID not found
+          content:
+            application/xml:
+              schema:
+                $ref: './music.yaml#/components/schemas/Error'
+      
+        '500':
+          $ref: '#/components/responses/InternalServerError'
         default:
           description: Returns error code and message in case of error
           content:
@@ -89,33 +103,7 @@ paths:
           application/xml:
             schema:
               $ref: '#/components/schemas/ParticipantSchema'
-    # Запрос в соответствии с вариантом
-    patch:
-      summary: Add a participant to the band
-      description: Add a participant to the band
 
-      responses:
-        '201':
-          description: Created. Returns created object
-          content:
-            application/xml:
-              schema:
-                $ref: './music.yaml#/components/schemas/MusicBand'
-
-        default:
-          description: Returns error code and message in case of error
-          content:
-            application/xml:
-              schema:
-                $ref: './music.yaml#/components/schemas/Error'
-
-      parameters:
-        - name: band-id
-          in: path
-          description: ID of the band to add a participant to
-          required: true
-          schema:
-            $ref: './music.yaml#/components/schemas/MusicBandId'
 
 components:
   schemas:
@@ -135,9 +123,5 @@ components:
           description: Имя нового участника.
           type: string
           minLength: 1
-        role:
-          description: Роль участника в группе (необязательно).
-          type: string
-          enum: [Vocalist, Guitarist, Bassist, Drummer, Keyboardist]
       required:
         - name
