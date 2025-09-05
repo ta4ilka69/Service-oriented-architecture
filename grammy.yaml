@@ -44,6 +44,8 @@ paths:
           $ref: './music.yaml#/components/responses/BadRequestInvalidInput'
         '404':
           $ref: './music.yaml#/components/responses/MusicBandNotFound'
+        '422':
+          $ref: './music.yaml#/components/responses/InvalidIdFormat'
         '500':
           $ref: './music.yaml#/components/responses/InternalServerError'
         '503':
@@ -80,6 +82,8 @@ paths:
           $ref: './music.yaml#/components/responses/BadRequestInvalidInput'
         '404':
           $ref: './music.yaml#/components/responses/MusicBandNotFound'
+        '422':
+          $ref: './music.yaml#/components/responses/InvalidIdFormat'
         '500':
           $ref: './music.yaml#/components/responses/InternalServerError'
         '503':
