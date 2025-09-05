@@ -290,6 +290,7 @@ paths:
           description: Musicbands deleted successfully. No content returned.
 
         '400':
+          description: Bad Request - Missing or invalid description parameter.
           $ref: '#/components/responses/BadRequestInvalidQueryParameters'
 
         '500':
@@ -319,6 +320,7 @@ paths:
           description: Musicband deleted successfully. No content returned.
 
         '400':
+          description: Bad Request - Missing or invalid genre parameter.
           $ref: '#/components/responses/BadRequestInvalidQueryParameters'
 
         '500':
@@ -365,6 +367,7 @@ paths:
                 example: 5
 
         '400':
+          description: Bad Request - Missing or invalid tracks parameter.
           $ref: '#/components/responses/BadRequestInvalidQueryParameters'
 
         '500':
