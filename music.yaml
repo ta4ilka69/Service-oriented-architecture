@@ -80,7 +80,6 @@ paths:
 
         '400':
           $ref: '#/components/responses/BadRequestInvalidQueryParameters'
-
         '500':
           $ref: '#/components/responses/InternalServerError'
         default:
@@ -148,6 +147,8 @@ paths:
 
         '404':
           $ref: '#/components/responses/MusicBandNotFound'
+        '422':
+          $ref: '#/components/responses/InvalidIdFormat'
 
         '500':
           $ref: '#/components/responses/InternalServerError'
@@ -529,6 +530,15 @@ components:
               example: 400
             message:
               example: Bad Request
+    UnprocessableEntityError:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            code:
+              example: 422
+            message:
+              example: Unprocessable Entity
 
     FilterCondition:
       type: string
@@ -594,3 +604,10 @@ components:
         application/xml:
           schema:
             $ref: '#/components/schemas/BadRequestError'
+
+    InvalidIdFormat:
+      description: Parameter 'id' must be a positive integer.
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/UnprocessableEntityError'
