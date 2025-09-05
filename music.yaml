@@ -533,11 +533,6 @@ components:
     FilterCondition:
       type: string
       pattern: '^((name|creationDate|description|genre|bestAlbum\.name)(>=|<|>|<=|!=|==|^=|$=|@=).+)|(coordinates\.x(>=|<=|>|<|!=|==)-?\d+(\.\d+)?|(id|coordinates\.y|numberOfParticipants|albumsCount|bestAlbum\.tracks)(>=|<=|>|<|!=|==)-?\d+)$'
-      examples:
-        - name==The Beatles
-        - albumsCount>5
-        - coordinates.x<=100.5
-        - description@=rock
 
     SortValues:
       type: string
