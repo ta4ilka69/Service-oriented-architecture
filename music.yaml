@@ -79,11 +79,7 @@ paths:
                   $ref: '#/components/schemas/MusicBandAllSchema'
 
         '400':
-          description: Bad Request - Invalid query parameters.
-          content:
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/BadRequestInvalidQueryParameters'
 
         '500':
           $ref: '#/components/responses/InternalServerError'
@@ -258,11 +254,7 @@ paths:
           description: Musicbands deleted successfully. No content returned.
 
         '400':
-          description: Bad Request - Missing or invalid description parameter.
-          content:
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/BadRequestInvalidQueryParameters'
 
         '500':
           $ref: '#/components/responses/InternalServerError'
@@ -285,11 +277,7 @@ paths:
           description: Musicband deleted successfully. No content returned.
 
         '400':
-          description: Bad Request - Missing or invalid genre parameter.
-          content:
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/BadRequestInvalidQueryParameters'
 
         '500':
           $ref: '#/components/responses/InternalServerError'
@@ -329,11 +317,7 @@ paths:
                 example: 5
 
         '400':
-          description: Bad Request - Missing or invalid tracks parameter.
-          content:
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/BadRequestInvalidQueryParameters'
 
         '500':
           $ref: '#/components/responses/InternalServerError'
@@ -476,7 +460,16 @@ components:
             code:
               example: 404
             message:
-              example: Not Found Error
+              example: Not Found
+    BadRequestError:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            code:
+              example: 400
+            message:
+              example: Bad Request
 
     FilterCondition:
       type: string
@@ -533,11 +526,17 @@ components:
       content:
         application/xml:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/BadRequestError'
+    BadRequestInvalidQueryParameters:
+      description: Bad Request - Invalid Query Parameters.
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/BadRequestError'
 
     BadRequestInvalidInput:
       description: Bad Request - Invalid input.
       content:
         application/xml:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/BadRequestError'
