@@ -83,6 +83,12 @@ paths:
 
         '500':
           $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Internal Server Error
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
 
     post:
       summary: Create a new musicband.
@@ -109,6 +115,12 @@ paths:
 
         '500':
           $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Internal Server Error
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /music-bands/{id}:
     get:
@@ -139,6 +151,12 @@ paths:
 
         '500':
           $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Internal Server Error
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
 
     put:
       summary: Update an existing musicband (with all fields).
@@ -176,6 +194,12 @@ paths:
 
         '500':
           $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Internal Server Error
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
     delete:
       summary: Delete a musicband by ID.
       description: Delete a single musicband by its unique ID.
@@ -200,6 +224,12 @@ paths:
 
         '500':
           $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Internal Server Error
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
 
     patch:
       summary: Partially update a musicband by ID.
@@ -235,6 +265,12 @@ paths:
 
         '500':
           $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Internal Server Error
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /music-bands/all-with-description:
     delete:
@@ -258,6 +294,12 @@ paths:
 
         '500':
           $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Internal Server Error
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /music-bands/one-with-genre:
     delete:
@@ -281,6 +323,12 @@ paths:
 
         '500':
           $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Internal Server Error
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /music-bands/count-best-album:
     get:
@@ -321,6 +369,12 @@ paths:
 
         '500':
           $ref: '#/components/responses/InternalServerError'
+        default:
+          description: Internal Server Error
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
 
 components:
   schemas:
@@ -391,7 +445,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/MusicBand'
         - type: object
-          required: 
+          required:
             - id
           properties:
             id:
@@ -444,7 +498,7 @@ components:
         message:
           type: string
           example: Internal Server Error
-    
+
     InternalServerError:
       allOf:
         - $ref: '#/components/schemas/Error'
