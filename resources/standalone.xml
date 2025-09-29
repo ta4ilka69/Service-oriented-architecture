@@ -329,7 +329,7 @@
                     </key-store>
                 </key-stores>
                 <key-managers>
-                    <key-manager name="applicationKM" key-store="applicationKS" alias="server">
+                    <key-manager name="applicationKM" key-store="applicationKS" alias-filter="server">
                         <credential-reference clear-text="q23886000"/>
                     </key-manager>
                 </key-managers>
