@@ -17,8 +17,10 @@ info:
   version: 0.0.1
 
 servers:
-  - url: 'http://localhost:5252/music-service'
-    description: Helios
+  - url: 'https://localhost:5252/music-service'
+    description: with https
+  - url: 'http://localhost:8082/music-service'
+    description: without https
 
 paths:
   /music-bands:
