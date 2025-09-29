@@ -102,7 +102,8 @@ public class MusicBandResource {
     @DELETE
     @Path("/one-with-genre")
     public Response deleteOneWithGenre(@QueryParam("genre") String genre) {
-        repository.deleteOneWithGenre(genre);
+        ru.itmo.soa.music.model.Genre parsedGenre = parseGenreQuery(genre);
+        repository.deleteOneWithGenre(parsedGenre.name());
         return Response.noContent().build();
     }
 
@@ -138,6 +139,17 @@ public class MusicBandResource {
             throw e;
         } catch (NumberFormatException ex) {
             throw new InvalidIdFormatException("Parameter 'id' must be a positive integer.");
+        }
+    }
+
+    private ru.itmo.soa.music.model.Genre parseGenreQuery(String value) {
+        if (value == null) {
+            throw new jakarta.ws.rs.BadRequestException("Invalid query parameter 'genre'");
+        }
+        try {
+            return ru.itmo.soa.music.model.Genre.valueOf(value);
+        } catch (IllegalArgumentException ex) {
+            throw new jakarta.ws.rs.BadRequestException("Invalid query parameter 'genre'");
         }
     }
 }
