@@ -33,6 +33,18 @@ public class MusicBandResource {
             @QueryParam("size") Integer size,
             @QueryParam("filter") List<String> filters
     ) {
+        if (page != null && page < 1) {
+            throw new jakarta.ws.rs.BadRequestException("Invalid query parameter 'page'");
+        }
+        if (size != null && size < 1) {
+            throw new jakarta.ws.rs.BadRequestException("Invalid query parameter 'size'");
+        }
+        // If one of page/size is provided without the other, ignore both (per spec)
+        if ((page != null && size == null) || (size != null && page == null)) {
+            page = null;
+            size = null;
+        }
+
         List<MusicBandAllSchema> items = repository.list(sort, page, size, filters);
         MusicBandList wrapper = new MusicBandList();
         wrapper.setItems(items);
