@@ -499,13 +499,13 @@
         </interface>
     </interfaces>
     <socket-binding-group name="standard-sockets" default-interface="public" port-offset="${jboss.socket.binding.port-offset:0}">
-        <socket-binding name="ajp" port="${jboss.ajp.port:8009}"/>
-        <!--<socket-binding name="http"  port="${jboss.http.port:8082}"/>-->
+        <socket-binding name="ajp" port="${jboss.ajp.port:8011}"/>
+        <!--<socket-binding name="http"  port="${jboss.http.port:8912}"/>-->
         <socket-binding name="https" port="5252"/>
-        <socket-binding name="management-http" interface="management" port="${jboss.management.http.port:9990}"/>
-        <socket-binding name="management-https" interface="management" port="${jboss.management.https.port:9993}"/>
-        <socket-binding name="txn-recovery-environment" port="4712"/>
-        <socket-binding name="txn-status-manager" port="4713"/>
+        <socket-binding name="management-http" interface="management" port="${jboss.management.http.port:5290}"/>
+        <socket-binding name="management-https" interface="management" port="${jboss.management.https.port:5293}"/>
+        <socket-binding name="txn-recovery-environment" port="5213"/>
+        <socket-binding name="txn-status-manager" port="5214"/>
         <outbound-socket-binding name="mail-smtp">
             <remote-destination host="${jboss.mail.server.host:localhost}" port="${jboss.mail.server.port:25}"/>
         </outbound-socket-binding>
