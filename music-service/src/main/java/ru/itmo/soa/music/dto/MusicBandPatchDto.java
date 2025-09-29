@@ -7,6 +7,10 @@ import jakarta.xml.bind.annotation.XmlType;
 import ru.itmo.soa.music.model.Album;
 import ru.itmo.soa.music.model.Coordinates;
 import ru.itmo.soa.music.model.Genre;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import ru.itmo.soa.music.xml.GenreAdapter;
+import ru.itmo.soa.music.xml.Int32AlbumsCountAdapter;
+import ru.itmo.soa.music.xml.Int32NumberOfParticipantsAdapter;
 
 @XmlRootElement(name = "musicBand")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -22,9 +26,12 @@ import ru.itmo.soa.music.model.Genre;
 public class MusicBandPatchDto {
     private String name;
     private Coordinates coordinates;
+    @XmlJavaTypeAdapter(Int32NumberOfParticipantsAdapter.class)
     private Integer numberOfParticipants;
+    @XmlJavaTypeAdapter(Int32AlbumsCountAdapter.class)
     private Integer albumsCount;
     private String description;
+    @XmlJavaTypeAdapter(GenreAdapter.class)
     private Genre genre;
     private Album bestAlbum;
 

@@ -5,6 +5,8 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import ru.itmo.soa.music.xml.Int64TracksAdapter;
 
 @XmlRootElement(name = "album")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -15,6 +17,7 @@ public class Album {
     private String name;
 
     @XmlElement(required = true)
+    @XmlJavaTypeAdapter(Int64TracksAdapter.class)
     private Long tracks; // minimum 1
 
     public Album() {

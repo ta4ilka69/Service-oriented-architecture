@@ -301,6 +301,9 @@ public class MusicBandRepository {
         }
         Comparator<MusicBand> comparator = null;
         for (String s : sortFields) {
+            if (s == null || s.isBlank()) {
+                throw new BadRequestException("Invalid sort: " + s);
+            }
             boolean desc = s.startsWith("-");
             String field = desc ? s.substring(1) : s;
             Comparator<MusicBand> c = switch (field) {
@@ -315,7 +318,7 @@ public class MusicBandRepository {
                 case "genre" -> Comparator.comparing(m -> m.getGenre() == null ? null : m.getGenre().name(), Comparator.nullsLast(String::compareTo));
                 case "bestAlbum.name" -> Comparator.comparing(m -> m.getBestAlbum() == null ? null : m.getBestAlbum().getName(), Comparator.nullsLast(String::compareTo));
                 case "bestAlbum.tracks" -> Comparator.comparing(m -> m.getBestAlbum() == null ? null : m.getBestAlbum().getTracks(), Comparator.nullsLast(Long::compareTo));
-                default -> Comparator.comparing(MusicBand::getId);
+                default -> throw new BadRequestException("Invalid sort: " + s);
             };
             if (desc) c = c.reversed();
             comparator = comparator == null ? c : comparator.thenComparing(c);
