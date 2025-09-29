@@ -40,6 +40,7 @@ public class MusicBandCreateUpdate {
     @XmlElement(required = true)
     @XmlJavaTypeAdapter(GenreAdapter.class)
     private Genre genre;
+    @XmlElement(name = "album")
     private Album bestAlbum;
 
     public MusicBandCreateUpdate() {}

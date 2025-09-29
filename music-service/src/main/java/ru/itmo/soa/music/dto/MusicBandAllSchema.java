@@ -52,6 +52,7 @@ public class MusicBandAllSchema {
     @XmlElement(required = true)
     private Genre genre;
 
+    @XmlElement(name = "album")
     private Album bestAlbum;
 
     public MusicBandAllSchema() {}

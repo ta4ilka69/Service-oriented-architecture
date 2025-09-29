@@ -2,6 +2,7 @@ package ru.itmo.soa.music.dto;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import ru.itmo.soa.music.model.Album;
@@ -33,6 +34,7 @@ public class MusicBandPatchDto {
     private String description;
     @XmlJavaTypeAdapter(GenreAdapter.class)
     private Genre genre;
+    @XmlElement(name = "album")
     private Album bestAlbum;
 
     public MusicBandPatchDto() {}
