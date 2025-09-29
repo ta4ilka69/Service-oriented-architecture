@@ -389,7 +389,8 @@
             </cache-container>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:io:3.0">
-            <worker name="default"/>
+            <worker name="default" io-threads="2" task-threads="16"/>
+            <buffer-pool name="default" buffer-size="16384" buffers-per-slice="128"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:jaxrs:3.0"/>
         <subsystem xmlns="urn:jboss:domain:jca:6.0">
@@ -397,15 +398,15 @@
             <bean-validation enabled="true"/>
             <default-workmanager>
                 <short-running-threads>
-                    <core-threads count="50"/>
-                    <queue-length count="50"/>
-                    <max-threads count="50"/>
+                    <core-threads count="8"/>
+                    <queue-length count="32"/>
+                    <max-threads count="16"/>
                     <keepalive-time time="10" unit="seconds"/>
                 </short-running-threads>
                 <long-running-threads>
-                    <core-threads count="50"/>
-                    <queue-length count="50"/>
-                    <max-threads count="50"/>
+                    <core-threads count="4"/>
+                    <queue-length count="32"/>
+                    <max-threads count="8"/>
                     <keepalive-time time="10" unit="seconds"/>
                 </long-running-threads>
             </default-workmanager>
