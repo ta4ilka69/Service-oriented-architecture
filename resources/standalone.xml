@@ -458,6 +458,7 @@
             <object-store path="tx-object-store" relative-to="jboss.server.data.dir"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:undertow:14.0" default-virtual-host="default-host" default-servlet-container="default" default-server="default-server" statistics-enabled="${wildfly.undertow.statistics-enabled:${wildfly.statistics-enabled:false}}" default-security-domain="other">
+            <byte-buffer-pool name="undertow-pool"/>
             <buffer-cache name="default"/>
             <server name="default-server">
                 <!--<http-listener  name="default" socket-binding="http"  redirect-socket="https"/>-->
