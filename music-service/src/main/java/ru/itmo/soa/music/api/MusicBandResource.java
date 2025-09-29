@@ -61,7 +61,7 @@ public class MusicBandResource {
     @GET
     @Path("/{id}")
     public Response getById(@PathParam("id") String idStr) {
-        int id = parseId(idStr);
+        int id = parseIdForGetDelete(idStr);
         MusicBandAllSchema found = repository.getById(id);
         return Response.ok(found).build();
     }
@@ -78,7 +78,7 @@ public class MusicBandResource {
     @DELETE
     @Path("/{id}")
     public Response delete(@PathParam("id") String idStr) {
-        int id = parseId(idStr);
+        int id = parseIdForGetDelete(idStr);
         repository.delete(id);
         return Response.noContent().build();
     }
@@ -122,6 +122,20 @@ public class MusicBandResource {
             int id = Integer.parseInt(idStr);
             if (id < 1) throw new NumberFormatException();
             return id;
+        } catch (NumberFormatException ex) {
+            throw new InvalidIdFormatException("Parameter 'id' must be a positive integer.");
+        }
+    }
+
+    private int parseIdForGetDelete(String idStr) {
+        try {
+            int id = Integer.parseInt(idStr);
+            if (id < 1) {
+                throw new ru.itmo.soa.music.error.BadRequestException("Invalid ID supplied");
+            }
+            return id;
+        } catch (ru.itmo.soa.music.error.BadRequestException e) {
+            throw e;
         } catch (NumberFormatException ex) {
             throw new InvalidIdFormatException("Parameter 'id' must be a positive integer.");
         }

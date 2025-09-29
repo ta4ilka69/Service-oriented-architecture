@@ -12,7 +12,7 @@ public class BadRequestExceptionMapper implements ExceptionMapper<BadRequestExce
     @Override
     public Response toResponse(BadRequestException exception) {
         String message = exception.getMessage() == null || exception.getMessage().isBlank()
-                ? "Bad Request" : exception.getMessage();
+                ? "Invalid ID supplied" : exception.getMessage();
         ApiError error = new ApiError(400, message);
         return Response.status(Response.Status.BAD_REQUEST)
                 .type(MediaType.APPLICATION_XML)
