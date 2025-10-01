@@ -1,9 +1,14 @@
 <jboss-deployment-structure>
-       <deployment>
-         <exclusions>
-           <module name="com.fasterxml.jackson.core.jackson-databind"/>
-           <module name="com.fasterxml.jackson.core.jackson-core"/>
-           <module name="com.fasterxml.jackson.core.jackson-annotations"/>
-         </exclusions>
-       </deployment>
+  <deployment>
+    <exclusions>
+      <module name="com.fasterxml.jackson.core.jackson-databind"/>
+      <module name="com.fasterxml.jackson.core.jackson-core"/>
+      <module name="com.fasterxml.jackson.core.jackson-annotations"/>
+      <module name="com.fasterxml.jackson.dataformat.jackson-dataformat-xml"/>
+      <module name="com.fasterxml.jackson.datatype.jackson-datatype-jdk8"/>
+      <module name="com.fasterxml.jackson.datatype.jackson-datatype-jsr310"/>
+      <module name="com.fasterxml.jackson.module.jackson-module-parameter-names"/>
+      <module name="com.github.fge.jackson-coreutils"/>
+    </exclusions>
+  </deployment>
 </jboss-deployment-structure>
