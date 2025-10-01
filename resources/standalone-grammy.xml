@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!--
-  Standalone config for grammy-service instance.
-  HTTPS only. Uses port 5262 for application HTTPS and 5300/5303 for mgmt.
-  Derived from resources/standalone.xml.
--->
 <server xmlns="urn:jboss:domain:20.0">
     <extensions>
         <extension module="org.jboss.as.clustering.infinispan"/>
@@ -516,5 +510,3 @@
         </outbound-socket-binding>
     </socket-binding-group>
 </server>
-
-
