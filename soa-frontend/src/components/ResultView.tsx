@@ -45,8 +45,7 @@ export function ResultView({ ok, status, data, error }: Props) {
    const list =
       data?.musicBands?.musicBandAllSchema ||
       data?.musicBands?.items ||
-      data?.items ||
-      []
+      data?.items
 
    if (Array.isArray(list)) {
       const rows = toRows(list)
