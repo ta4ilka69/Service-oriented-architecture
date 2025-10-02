@@ -17,21 +17,15 @@ const parser = new XMLParser({
 })
 
 export async function requestXML(method: string, url: string, bodyXml?: string): Promise<HttpResult> {
-  const HTTPS_BASE = (import.meta as any).env?.VITE_API_BASE_HTTPS || 'https://localhost:5252'
+  const MUSIC_BASE  = (import.meta as any).env?.VITE_MUSIC_API_HTTPS  || 'https://localhost:5252'
+  const GRAMMY_BASE = (import.meta as any).env?.VITE_GRAMMY_API_HTTPS || 'https://localhost:5314'
 
   const resolveHttpsUrl = (input: string): string => {
-    try {
-      if (input.startsWith('/')) {
-        return new URL(input, HTTPS_BASE).toString()
-      }
-      const u = new URL(input, HTTPS_BASE)
-      if (u.protocol !== 'https:') {
-        u.protocol = 'https:'
-      }
-      return u.toString()
-    } catch {
-      return new URL(input, HTTPS_BASE).toString()
-    }
+    const base = input.startsWith('/music-bands')
+      || input.startsWith('/music')
+      ? MUSIC_BASE
+      : GRAMMY_BASE
+    return new URL(input, base).toString()
   }
 
   const targetUrl = resolveHttpsUrl(url)

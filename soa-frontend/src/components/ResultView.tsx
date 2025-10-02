@@ -50,12 +50,11 @@ export function ResultView({ ok, status, data, error }: Props) {
 
    if (Array.isArray(list)) {
       const rows = toRows(list)
-      const columns = Array.from(
-         rows.reduce((set, row) => {
-            Object.keys(row || {}).forEach((k) => set.add(k))
-            return set
-         }, new Set<string>())
-      )
+      const columnsSet = new Set<string>()
+      rows.forEach((row) => {
+         Object.keys(row || {}).forEach((k) => columnsSet.add(k))
+      })
+      const columns = Array.from(columnsSet)
 
       return (
          <Paper sx={{ p: 0, height: '100%', display: 'flex', flexDirection: 'column' }}>

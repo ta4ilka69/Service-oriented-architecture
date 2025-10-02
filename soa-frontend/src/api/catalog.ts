@@ -26,7 +26,7 @@ export const endpoints: Endpoint[] = [
     id: 'music-list',
     service: 'music',
     method: 'GET',
-    path: '/music-service/music-bands',
+    path: '/music-bands',
     title: 'List MusicBands',
     description: 'Список групп с фильтрацией, сортировкой и пагинацией',
     params: [
@@ -41,7 +41,7 @@ export const endpoints: Endpoint[] = [
     id: 'music-create',
     service: 'music',
     method: 'POST',
-    path: '/music-service/music-bands',
+    path: '/music-bands',
     title: 'Create MusicBand',
     params: [
       { name: 'body', in: 'body', type: 'xml', required: true, description: 'MusicBand (XML)', example: '<musicBand>...</musicBand>' },
@@ -52,7 +52,7 @@ export const endpoints: Endpoint[] = [
     id: 'music-get',
     service: 'music',
     method: 'GET',
-    path: '/music-service/music-bands/{id}',
+    path: '/music-bands/{id}',
     title: 'Get MusicBand by ID',
     params: [
       { name: 'id', in: 'path', type: 'int32', required: true, description: '>= 1', min: 1, example: '1' },
@@ -63,7 +63,7 @@ export const endpoints: Endpoint[] = [
     id: 'music-put',
     service: 'music',
     method: 'PUT',
-    path: '/music-service/music-bands/{id}',
+    path: '/music-bands/{id}',
     title: 'Replace MusicBand',
     params: [
       { name: 'id', in: 'path', type: 'int32', required: true, min: 1, example: '1' },
@@ -75,7 +75,7 @@ export const endpoints: Endpoint[] = [
     id: 'music-delete',
     service: 'music',
     method: 'DELETE',
-    path: '/music-service/music-bands/{id}',
+    path: '/music-bands/{id}',
     title: 'Delete MusicBand',
     params: [
       { name: 'id', in: 'path', type: 'int32', required: true, min: 1, example: '1' },
@@ -86,7 +86,7 @@ export const endpoints: Endpoint[] = [
     id: 'music-patch',
     service: 'music',
     method: 'PATCH',
-    path: '/music-service/music-bands/{id}',
+    path: '/music-bands/{id}',
     title: 'Patch MusicBand',
     params: [
       { name: 'id', in: 'path', type: 'int32', required: true, min: 1, example: '1' },
@@ -98,7 +98,7 @@ export const endpoints: Endpoint[] = [
     id: 'music-delete-all-desc',
     service: 'music',
     method: 'DELETE',
-    path: '/music-service/music-bands/all-with-description',
+    path: '/music-bands/all-with-description',
     title: 'Delete All With Description',
     params: [
       { name: 'description', in: 'query', type: 'string', required: true, example: 'test' },
@@ -109,7 +109,7 @@ export const endpoints: Endpoint[] = [
     id: 'music-delete-one-genre',
     service: 'music',
     method: 'DELETE',
-    path: '/music-service/music-bands/one-with-genre',
+    path: '/music-bands/one-with-genre',
     title: 'Delete One With Genre',
     params: [
       { name: 'genre', in: 'query', type: 'string', required: true, enum: ['PSYCHEDELIC_CLOUD_RAP','SOUL','POP'], example: 'POP' },
@@ -120,7 +120,7 @@ export const endpoints: Endpoint[] = [
     id: 'music-count-album',
     service: 'music',
     method: 'GET',
-    path: '/music-service/music-bands/count-best-album',
+    path: '/music-bands/count-best-album',
     title: 'Count Best Album >',
     params: [
       { name: 'albumName', in: 'query', type: 'string', required: true, example: 'Greatest' },
