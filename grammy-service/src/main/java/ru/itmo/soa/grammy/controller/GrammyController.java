@@ -1,7 +1,9 @@
 package ru.itmo.soa.grammy.controller;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import ru.itmo.soa.grammy.dto.ParticipantSchema;
 import ru.itmo.soa.grammy.dto.Single;
 import ru.itmo.soa.grammy.dto.SingleSchema;
 import ru.itmo.soa.grammy.dto.MusicBandPatch;
+import java.util.Collections;
 
 @RestController
 @RequestMapping(value = "/api/v1/grammy", produces = MediaType.APPLICATION_XML_VALUE)
@@ -32,28 +35,57 @@ public class GrammyController {
     }
 
     @PostMapping(value = "/band/{band-id}/singles/add", consumes = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<Single> addSingle(
-            @PathVariable("band-id") int bandId,
+    public ResponseEntity<?> addSingle(
+            @PathVariable("band-id") String bandId,
             @RequestBody SingleSchema body
     ) {
         try {
-            // Validate that the band exists by calling the first service
+            // Validate that the band exists and read current albumsCount
             String url = musicServiceBaseUrl + "/music-bands/" + bandId;
-            restTemplate.getForObject(url, MusicBandAllSchema.class);
 
-            // The spec says: create Single from Album schema; here we just echo the name and 1 track
+            HttpHeaders getHeaders = new HttpHeaders();
+            getHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_XML));
+            MusicBandAllSchema current = restTemplate
+                    .exchange(url, HttpMethod.GET, new HttpEntity<>(getHeaders), MusicBandAllSchema.class)
+                    .getBody();
+
+            if (current == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            // Increase albumsCount by 1
+            int nextAlbumsCount = (current.getAlbumsCount() == null ? 1 : current.getAlbumsCount() + 1);
+            MusicBandPatch patch = new MusicBandPatch();
+            patch.setAlbumsCount(nextAlbumsCount);
+
+            HttpHeaders patchHeaders = new HttpHeaders();
+            patchHeaders.setContentType(MediaType.APPLICATION_XML);
+            patchHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_XML));
+            restTemplate.exchange(
+                    url,
+                    HttpMethod.PATCH,
+                    new HttpEntity<>(patch, patchHeaders),
+                    MusicBandAllSchema.class
+            );
+
+            // Create and return Single
             Single created = new Single();
             created.setName(body.getName());
             created.setTracks(1L);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (RestClientResponseException ex) {
-            return ResponseEntity.status(ex.getRawStatusCode()).build();
+            HttpHeaders responseHeaders = ex.getResponseHeaders() != null ? ex.getResponseHeaders() : new HttpHeaders();
+            return ResponseEntity
+                    .status(ex.getRawStatusCode())
+                    .headers(responseHeaders)
+                    .contentType(MediaType.APPLICATION_XML)
+                    .body(ex.getResponseBodyAsString());
         }
     }
 
     @PostMapping(value = "/band/{band-id}/participants/add", consumes = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<MusicBandAllSchema> addParticipant(
-            @PathVariable("band-id") int bandId,
+    public ResponseEntity<?> addParticipant(
+            @PathVariable("band-id") String bandId,
             @RequestBody ParticipantSchema body
     ) {
         try {
@@ -61,12 +93,17 @@ public class GrammyController {
             String url = musicServiceBaseUrl + "/music-bands/" + bandId;
 
             // Fetch current participants, then PATCH only that field
-            MusicBandAllSchema current = restTemplate.getForObject(url, MusicBandAllSchema.class);
+            HttpHeaders getHeaders = new HttpHeaders();
+            getHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_XML));
+            MusicBandAllSchema current = restTemplate
+                    .exchange(url, HttpMethod.GET, new HttpEntity<>(getHeaders), MusicBandAllSchema.class)
+                    .getBody();
             if (current == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
             int next = (current.getNumberOfParticipants() == null ? 1 : current.getNumberOfParticipants() + 1);
-            MusicBandPatch patch = new MusicBandPatch(next);
+            MusicBandPatch patch = new MusicBandPatch();
+            patch.setNumberOfParticipants(next);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
@@ -75,14 +112,19 @@ public class GrammyController {
             MusicBandAllSchema updated = restTemplate
                     .exchange(
                             url,
-                            org.springframework.http.HttpMethod.PATCH,
-                            new org.springframework.http.HttpEntity<>(patch, headers),
+                            HttpMethod.PATCH,
+                            new HttpEntity<>(patch, headers),
                             MusicBandAllSchema.class
                     )
                     .getBody();
             return ResponseEntity.status(HttpStatus.CREATED).body(updated);
         } catch (RestClientResponseException ex) {
-            return ResponseEntity.status(ex.getRawStatusCode()).build();
+            HttpHeaders responseHeaders = ex.getResponseHeaders() != null ? ex.getResponseHeaders() : new HttpHeaders();
+            return ResponseEntity
+                    .status(ex.getRawStatusCode())
+                    .headers(responseHeaders)
+                    .contentType(MediaType.APPLICATION_XML)
+                    .body(ex.getResponseBodyAsString());
         }
     }
 }
