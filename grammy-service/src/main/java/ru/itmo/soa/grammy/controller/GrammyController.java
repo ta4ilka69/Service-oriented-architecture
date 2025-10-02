@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import ru.itmo.soa.grammy.dto.MusicBandAllSchema;
-import ru.itmo.soa.grammy.dto.MusicBandCreateUpdate;
 import ru.itmo.soa.grammy.dto.ParticipantSchema;
 import ru.itmo.soa.grammy.dto.Single;
 import ru.itmo.soa.grammy.dto.SingleSchema;
+import ru.itmo.soa.grammy.dto.MusicBandPatch;
 
 @RestController
 @RequestMapping(value = "/api/v1/grammy", produces = MediaType.APPLICATION_XML_VALUE)
@@ -59,17 +59,17 @@ public class GrammyController {
             // Call music-service PATCH to increase numberOfParticipants by 1
             String url = musicServiceBaseUrl + "/music-bands/" + bandId;
 
-            // Fetch current band and send PUT with all fields updated numberOfParticipants
+            // Fetch current participants, then PATCH only that field
             MusicBandAllSchema current = restTemplate.getForObject(url, MusicBandAllSchema.class);
             if (current == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-            MusicBandCreateUpdate putBody = MusicBandCreateUpdate.fromAllSchema(current);
-            putBody.setNumberOfParticipants(putBody.getNumberOfParticipants() + 1);
+            int next = (current.getNumberOfParticipants() == null ? 1 : current.getNumberOfParticipants() + 1);
+            MusicBandPatch patch = new MusicBandPatch(next);
 
             MusicBandAllSchema updated = restTemplate
-                    .exchange(url, org.springframework.http.HttpMethod.PUT,
-                            new org.springframework.http.HttpEntity<>(putBody),
+                    .exchange(url, org.springframework.http.HttpMethod.PATCH,
+                            new org.springframework.http.HttpEntity<>(patch),
                             MusicBandAllSchema.class)
                     .getBody();
             return ResponseEntity.status(HttpStatus.CREATED).body(updated);
