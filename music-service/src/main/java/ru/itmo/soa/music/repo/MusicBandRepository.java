@@ -162,14 +162,14 @@ public class MusicBandRepository {
         if (dto.getName() == null || dto.getName().isBlank()) throw new BadRequestException("Field 'name' is invalid or missing");
         if (dto.getCoordinates() == null) throw new BadRequestException("Field 'coordinates' is invalid or missing");
         if (dto.getCoordinates().getX() == null || dto.getCoordinates().getX() <= -975) throw new BadRequestException("Field 'coordinates.x' must be greater than -975");
-        if (dto.getCoordinates().getY() == null || dto.getCoordinates().getY() < 1) throw new BadRequestException("Field 'coordinates.y' must be >= 1");
-        if (dto.getNumberOfParticipants() == null || dto.getNumberOfParticipants() < 1) throw new BadRequestException("Field 'numberOfParticipants' must be >= 1");
+        if (dto.getCoordinates().getY() == null || dto.getCoordinates().getY() < 1) throw new BadRequestException("Field 'coordinates.y' must be integer >= 1");
+        if (dto.getNumberOfParticipants() == null || dto.getNumberOfParticipants() < 1) throw new BadRequestException("Field 'numberOfParticipants' must be integer >= 1");
         if (dto.getAlbumsCount() == null || dto.getAlbumsCount() < 1) throw new BadRequestException("Field 'albumsCount' must be >= 1");
         if (dto.getDescription() == null) throw new BadRequestException("Field 'description' is required");
         if (dto.getGenre() == null) throw new BadRequestException("Field 'genre' is required");
         if (dto.getBestAlbum() != null) {
             if (dto.getBestAlbum().getName() == null || dto.getBestAlbum().getName().isBlank()) throw new BadRequestException("Field 'bestAlbum.name' is invalid or missing");
-            if (dto.getBestAlbum().getTracks() == null || dto.getBestAlbum().getTracks() < 1) throw new BadRequestException("Field 'bestAlbum.tracks' must be >= 1");
+            if (dto.getBestAlbum().getTracks() == null || dto.getBestAlbum().getTracks() < 1) throw new BadRequestException("Field 'bestAlbum.tracks' must be integer >= 1");
         }
     }
 
@@ -177,14 +177,14 @@ public class MusicBandRepository {
         if (e.getName() == null || e.getName().isBlank()) throw new BadRequestException("Field 'name' is invalid or missing");
         if (e.getCoordinates() == null) throw new BadRequestException("Field 'coordinates' is invalid or missing");
         if (e.getCoordinates().getX() == null || e.getCoordinates().getX() <= -975) throw new BadRequestException("Field 'coordinates.x' must be greater than -975");
-        if (e.getCoordinates().getY() == null || e.getCoordinates().getY() < 1) throw new BadRequestException("Field 'coordinates.y' must be >= 1");
-        if (e.getNumberOfParticipants() == null || e.getNumberOfParticipants() < 1) throw new BadRequestException("Field 'numberOfParticipants' must be >= 1");
+        if (e.getCoordinates().getY() == null || e.getCoordinates().getY() < 1) throw new BadRequestException("Field 'coordinates.y' must be integer >= 1");
+        if (e.getNumberOfParticipants() == null || e.getNumberOfParticipants() < 1) throw new BadRequestException("Field 'numberOfParticipants' must be integer >= 1");
         if (e.getAlbumsCount() == null || e.getAlbumsCount() < 1) throw new BadRequestException("Field 'albumsCount' must be >= 1");
         if (e.getDescription() == null) throw new BadRequestException("Field 'description' is required");
         if (e.getGenre() == null) throw new BadRequestException("Field 'genre' is required");
         if (e.getBestAlbum() != null) {
             if (e.getBestAlbum().getName() == null || e.getBestAlbum().getName().isBlank()) throw new BadRequestException("Field 'bestAlbum.name' is invalid or missing");
-            if (e.getBestAlbum().getTracks() == null || e.getBestAlbum().getTracks() < 1) throw new BadRequestException("Field 'bestAlbum.tracks' must be >= 1");
+            if (e.getBestAlbum().getTracks() == null || e.getBestAlbum().getTracks() < 1) throw new BadRequestException("Field 'bestAlbum.tracks' must be integer >= 1");
         }
     }
 
