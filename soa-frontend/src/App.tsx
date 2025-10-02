@@ -37,7 +37,9 @@ function App() {
     let url = selected.path
     // path params
     selected.params.filter(p => p.in === 'path').forEach(p => {
-      url = url.replace(`{${p.name}}`, encodeURIComponent(formValues[p.name] || ''))
+      const raw = formValues[p.name]
+      const str = Array.isArray(raw) ? (raw[0] ?? '') : (raw ?? '')
+      url = url.replace(`{${p.name}}`, encodeURIComponent(str))
     })
     // query params (support multiple values)
     const encodePair = (p: Param, v: string) => `${encodeURIComponent(p.name)}=${encodeURIComponent(v)}`
@@ -58,7 +60,10 @@ function App() {
 
   const onSend = async () => {
     const url = buildUrl()
-    const bodyXml = selected.params.find(p => p.in === 'body') ? (formValues['body'] || '') : undefined
+    const rawBody = formValues['body']
+    const bodyXml = selected.params.find(p => p.in === 'body')
+      ? (Array.isArray(rawBody) ? rawBody.join('') : (rawBody ?? ''))
+      : undefined
     const res = await requestXML(selected.method, url, bodyXml)
     setResult(res)
   }
