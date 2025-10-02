@@ -15,7 +15,7 @@ config:
 
 	cd ./grammy-service && mvn -q -DskipTests package && cd ..
 	cp ./grammy-service/target/grammy-service.war $(INST_ROOT)/service2/deployments/grammy-service.war
-	cp ./soa-frontend/soa-frontend.war $(INST_ROOT)/service2/deployments/soa-frontend.war
+	cp ./soa-frontend/ui.war $(INST_ROOT)/service2/deployments/ui.war
 
 	cp ../server.p12 $(INST_ROOT)/service1/configuration/application.keystore
 	cp ../server2.p12 $(INST_ROOT)/service2/configuration/application.keystore
