@@ -7,6 +7,8 @@ export type Param = {
   enum?: string[]
   min?: number
   example?: string
+  // If true, this query param can be provided multiple times (e.g. sort=..&sort=..)
+  multiple?: boolean
 }
 
 export type Endpoint = {
@@ -30,10 +32,10 @@ export const endpoints: Endpoint[] = [
     title: 'List MusicBands',
     description: 'Список групп с фильтрацией, сортировкой и пагинацией',
     params: [
-      { name: 'sort', in: 'query', type: 'string', description: "Напр. 'name', '-id'", example: 'name' },
+      { name: 'sort', in: 'query', type: 'string', description: "Поля сортировки. Префикс '-' — по убыванию", example: '-name', multiple: true },
       { name: 'page', in: 'query', type: 'int32', description: '>= 1', min: 1, example: '1' },
       { name: 'size', in: 'query', type: 'int32', description: '>= 1', min: 1, example: '10' },
-      { name: 'filter', in: 'query', type: 'string', description: 'field(>=|<=|>|<|!=|==|^=|$=|@=)value', example: 'albumsCount>=2' },
+      { name: 'filter', in: 'query', type: 'string', description: 'field(>=|<=|>|<|!=|==|^=|$=|@=)value', example: 'numberOfParticipants<100', multiple: true },
     ],
     responseType: 'xml-list',
   },

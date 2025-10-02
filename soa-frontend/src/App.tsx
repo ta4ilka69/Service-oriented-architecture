@@ -8,7 +8,7 @@ import Divider from '@mui/material/Divider'
 import { theme } from './theme'
 import EndpointList from './components/EndpointList'
 import { endpoints } from './api/catalog'
-import type { Endpoint } from './api/catalog'
+import type { Endpoint, Param } from './api/catalog'
 import RequestForm from './components/RequestForm'
 import ResultView from './components/ResultView'
 import SplitterWithSend from './components/SplitterWithSend'
@@ -16,18 +16,20 @@ import { requestXML } from './api/http'
 
 function App() {
   const [selected, setSelected] = useState<Endpoint>(endpoints[0])
-  const [values, setValues] = useState<Record<string, string>>({})
+  const [values, setValues] = useState<Record<string, string | string[]>>({})
   const [result, setResult] = useState<{ ok: boolean; status: number; data?: any; error?: any }>({ ok: true, status: 0 })
 
   const formValues = useMemo(() => {
-    const init: Record<string, string> = {}
+    const init: Record<string, string | string[]> = {}
     selected.params.forEach((p) => {
-      if (values[p.name] == null && p.example != null) init[p.name] = String(p.example)
+      if (values[p.name] == null && p.example != null) {
+        init[p.name] = p.multiple ? [String(p.example)] : String(p.example)
+      }
     })
     return { ...init, ...values }
   }, [selected, values])
 
-  const handleChange = (name: string, value: string) => {
+  const handleChange = (name: string, value: string | string[]) => {
     setValues((v) => ({ ...v, [name]: value }))
   }
 
@@ -37,12 +39,19 @@ function App() {
     selected.params.filter(p => p.in === 'path').forEach(p => {
       url = url.replace(`{${p.name}}`, encodeURIComponent(formValues[p.name] || ''))
     })
-    // query params
-    const qs = selected.params.filter(p => p.in === 'query').map(p => {
+    // query params (support multiple values)
+    const encodePair = (p: Param, v: string) => `${encodeURIComponent(p.name)}=${encodeURIComponent(v)}`
+    const pairs: string[] = []
+    selected.params.filter(p => p.in === 'query').forEach(p => {
       const val = formValues[p.name]
-      if (val == null || val === '') return ''
-      return `${encodeURIComponent(p.name)}=${encodeURIComponent(val)}`
-    }).filter(Boolean).join('&')
+      if (val == null) return
+      if (Array.isArray(val)) {
+        val.filter(s => s !== '').forEach(v => pairs.push(encodePair(p, v)))
+      } else if (val !== '') {
+        pairs.push(encodePair(p, val))
+      }
+    })
+    const qs = pairs.join('&')
     if (qs) url += (url.includes('?') ? '&' : '?') + qs
     return url
   }
