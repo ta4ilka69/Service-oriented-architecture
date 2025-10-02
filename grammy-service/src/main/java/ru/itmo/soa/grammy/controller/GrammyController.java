@@ -1,6 +1,7 @@
 package ru.itmo.soa.grammy.controller;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -67,10 +68,17 @@ public class GrammyController {
             int next = (current.getNumberOfParticipants() == null ? 1 : current.getNumberOfParticipants() + 1);
             MusicBandPatch patch = new MusicBandPatch(next);
 
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_XML);
+            headers.setAccept(java.util.Collections.singletonList(MediaType.APPLICATION_XML));
+
             MusicBandAllSchema updated = restTemplate
-                    .exchange(url, org.springframework.http.HttpMethod.PATCH,
-                            new org.springframework.http.HttpEntity<>(patch),
-                            MusicBandAllSchema.class)
+                    .exchange(
+                            url,
+                            org.springframework.http.HttpMethod.PATCH,
+                            new org.springframework.http.HttpEntity<>(patch, headers),
+                            MusicBandAllSchema.class
+                    )
                     .getBody();
             return ResponseEntity.status(HttpStatus.CREATED).body(updated);
         } catch (RestClientResponseException ex) {
