@@ -17,10 +17,8 @@ info:
   version: 0.0.1
 
 servers:
-  - url: 'https://localhost:5252/music-service'
+  - url: 'https://localhost:5252'
     description: with https
-  - url: 'http://localhost:8082/music-service'
-    description: without https
 
 paths:
   /music-bands:
