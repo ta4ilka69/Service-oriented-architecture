@@ -4,10 +4,4 @@
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
     <display-name>music-service</display-name>
-
-    <!-- Prefer JAXB over Jackson for XML so that XmlAdapter is applied -->
-    <context-param>
-        <param-name>resteasy.preferJacksonOverJaxb</param-name>
-        <param-value>false</param-value>
-    </context-param>
 </web-app>
