@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
+
+import ru.itmo.soa.grammy.dto.ErrorResponse;
 import ru.itmo.soa.grammy.dto.MusicBandAllSchema;
 import ru.itmo.soa.grammy.dto.ParticipantSchema;
 import ru.itmo.soa.grammy.dto.Single;
@@ -50,7 +52,9 @@ public class GrammyController {
                     .getBody();
 
             if (current == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_XML);
+                return new ResponseEntity<>(new ErrorResponse(404, "Not Found"), headers, HttpStatus.NOT_FOUND);
             }
 
             // Increase albumsCount by 1
@@ -74,12 +78,11 @@ public class GrammyController {
             created.setTracks(1L);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (RestClientResponseException ex) {
-            HttpHeaders responseHeaders = ex.getResponseHeaders() != null ? ex.getResponseHeaders() : new HttpHeaders();
-            return ResponseEntity
-                    .status(ex.getRawStatusCode())
-                    .headers(responseHeaders)
-                    .contentType(MediaType.APPLICATION_XML)
-                    .body(ex.getResponseBodyAsString());
+            int status = ex.getStatusCode().value();
+            ErrorResponse error = new ErrorResponse(status, ex.getStatusText());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_XML);
+            return new ResponseEntity<>(error, headers, HttpStatus.valueOf(status));
         }
     }
 
@@ -99,7 +102,9 @@ public class GrammyController {
                     .exchange(url, HttpMethod.GET, new HttpEntity<>(getHeaders), MusicBandAllSchema.class)
                     .getBody();
             if (current == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_XML);
+                return new ResponseEntity<>(new ErrorResponse(404, "Not Found"), headers, HttpStatus.NOT_FOUND);
             }
             int next = (current.getNumberOfParticipants() == null ? 1 : current.getNumberOfParticipants() + 1);
             MusicBandPatch patch = new MusicBandPatch();
@@ -119,12 +124,11 @@ public class GrammyController {
                     .getBody();
             return ResponseEntity.status(HttpStatus.CREATED).body(updated);
         } catch (RestClientResponseException ex) {
-            HttpHeaders responseHeaders = ex.getResponseHeaders() != null ? ex.getResponseHeaders() : new HttpHeaders();
-            return ResponseEntity
-                    .status(ex.getRawStatusCode())
-                    .headers(responseHeaders)
-                    .contentType(MediaType.APPLICATION_XML)
-                    .body(ex.getResponseBodyAsString());
+            int status = ex.getStatusCode().value();
+            ErrorResponse error = new ErrorResponse(status, ex.getStatusText());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_XML);
+            return new ResponseEntity<>(error, headers, HttpStatus.valueOf(status));
         }
     }
 }
