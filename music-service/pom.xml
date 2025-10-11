@@ -7,10 +7,10 @@
     <groupId>ru.itmo.soa</groupId>
     <artifactId>music-service</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>pom</packaging>
 
     <name>music-service</name>
-    <description>JAX-RS MusicBand service for WildFly</description>
+    <description>Music service - multi-module (EJB + Web)</description>
 
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
@@ -18,65 +18,10 @@
         <jakartaee.version>10.0.0</jakartaee.version>
     </properties>
 
-    <dependencies>
-        <!-- Provided by WildFly (Jakarta EE 10 web profile) -->
-        <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-web-api</artifactId>
-            <version>${jakartaee.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- JAXB API for XML binding (provided by WildFly) -->
-        <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.2</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-       <groupId>com.fasterxml.jackson.core</groupId>
-       <artifactId>jackson-core</artifactId>
-       <version>2.17.2</version>
-   </dependency>
-   <dependency>
-       <groupId>com.fasterxml.jackson.core</groupId>
-       <artifactId>jackson-databind</artifactId>
-       <version>2.17.2</version>
-   </dependency>
-   <dependency>
-       <groupId>com.fasterxml.jackson.core</groupId>
-       <artifactId>jackson-annotations</artifactId>
-       <version>2.17.2</version>
-   </dependency>
-   <dependency>
-       <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
-       <artifactId>jackson-jakarta-rs-json-provider</artifactId>
-       <version>2.17.2</version>
-   </dependency>
-    </dependencies>
-
-    <build>
-        <finalName>${project.artifactId}</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <release>${maven.compiler.release}</release>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.4.0</version>
-                <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <modules>
+        <module>music-ejb</module>
+        <module>music-web</module>
+    </modules>
 
 </project>
-
 
