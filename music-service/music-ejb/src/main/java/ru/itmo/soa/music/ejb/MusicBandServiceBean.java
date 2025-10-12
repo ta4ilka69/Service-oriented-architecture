@@ -11,7 +11,7 @@ import ru.itmo.soa.music.repo.MusicBandRepository;
 @Stateless
 public class MusicBandServiceBean implements MusicBandServiceRemote {
 
-    private final MusicBandRepository repository = new MusicBandRepository();
+    private static final MusicBandRepository repository = new MusicBandRepository();
 
     @Override
     public List<MusicBandAllSchema> list(List<String> sort, Integer page, Integer size, List<String> filters) {
