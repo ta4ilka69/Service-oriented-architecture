@@ -291,6 +291,37 @@ public class MusicBandRepository {
         };
     }
 
+    private Comparator<MusicBand> buildComparator(List<String> sortFields) {
+        if (sortFields == null || sortFields.isEmpty()) {
+            return Comparator.comparing(MusicBand::getId);
+        }
+        Comparator<MusicBand> comparator = null;
+        for (String s : sortFields) {
+            if (s == null || s.isBlank()) {
+                throw new BadRequestException("Invalid sort: " + s);
+            }
+            boolean desc = s.startsWith("-");
+            String field = desc ? s.substring(1) : s;
+            Comparator<MusicBand> c = switch (field) {
+                case "id" -> Comparator.comparing(MusicBand::getId);
+                case "name" -> Comparator.comparing(MusicBand::getName, Comparator.nullsLast(String::compareTo));
+                case "coordinates.x" -> Comparator.comparing(m -> m.getCoordinates() == null ? null : m.getCoordinates().getX(), Comparator.nullsLast(Double::compareTo));
+                case "coordinates.y" -> Comparator.comparing(m -> m.getCoordinates() == null ? null : m.getCoordinates().getY(), Comparator.nullsLast(Long::compareTo));
+                case "creationDate" -> Comparator.comparing(MusicBand::getCreationDate, Comparator.nullsLast(LocalDate::compareTo));
+                case "numberOfParticipants" -> Comparator.comparing(MusicBand::getNumberOfParticipants, Comparator.nullsLast(Integer::compareTo));
+                case "albumsCount" -> Comparator.comparing(MusicBand::getAlbumsCount, Comparator.nullsLast(Integer::compareTo));
+                case "description" -> Comparator.comparing(MusicBand::getDescription, Comparator.nullsLast(String::compareTo));
+                case "genre" -> Comparator.comparing(m -> m.getGenre() == null ? null : m.getGenre().name(), Comparator.nullsLast(String::compareTo));
+                case "bestAlbum.name" -> Comparator.comparing(m -> m.getBestAlbum() == null ? null : m.getBestAlbum().getName(), Comparator.nullsLast(String::compareTo));
+                case "bestAlbum.tracks" -> Comparator.comparing(m -> m.getBestAlbum() == null ? null : m.getBestAlbum().getTracks(), Comparator.nullsLast(Long::compareTo));
+                default -> throw new BadRequestException("Invalid sort: " + s);
+            };
+            if (desc) c = c.reversed();
+            comparator = comparator == null ? c : comparator.thenComparing(c);
+        }
+        return comparator == null ? Comparator.comparing(MusicBand::getId) : comparator;
+    }
+
     private MusicBandAllSchema toDto(MusicBand e) {
         MusicBandAllSchema dto = new MusicBandAllSchema();
         dto.setId(e.getId());
