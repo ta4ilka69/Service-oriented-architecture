@@ -38,6 +38,7 @@
             <version>${project.version}</version>
             <classifier>client</classifier>
             <type>jar</type>
+            <scope>provided</scope>
         </dependency>
 
         <!-- EJB client for remote lookups (provided by WildFly) -->
