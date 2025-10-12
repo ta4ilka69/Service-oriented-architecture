@@ -10,15 +10,13 @@ import ru.itmo.soa.music.error.ApiError;
 public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
     @Override
     public Response toResponse(Throwable exception) {
-        Throwable cause = exception;
-        while (cause.getCause() != null) {
-            cause = cause.getCause();
-        }
+        Throwable cause = unwrap(exception);
 
         String className = exception.getClass().getSimpleName();
         boolean isBadRequestLike = className.contains("BadRequest") || className.contains("Param");
-        if (isBadRequestLike || cause instanceof NumberFormatException) {
-            ApiError error = new ApiError(400, "Bad Request");
+        if (isBadRequestLike || cause instanceof NumberFormatException || cause instanceof IllegalArgumentException) {
+            String msg = (cause.getMessage() == null || cause.getMessage().isBlank()) ? "Bad Request" : cause.getMessage();
+            ApiError error = new ApiError(400, msg);
             return Response.status(Response.Status.BAD_REQUEST)
                     .type(MediaType.APPLICATION_XML)
                     .entity(error)
@@ -30,6 +28,14 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
                 .type(MediaType.APPLICATION_XML)
                 .entity(error)
                 .build();
+    }
+
+    private static Throwable unwrap(Throwable t) {
+        Throwable cur = t;
+        while (cur.getCause() != null) {
+            cur = cur.getCause();
+        }
+        return cur;
     }
 }
 

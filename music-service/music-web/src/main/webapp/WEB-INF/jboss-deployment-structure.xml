@@ -12,6 +12,8 @@
       <module name="org.jboss.resteasy.resteasy-jackson2-provider"/>
     </exclusions>
     <dependencies>
+      <!-- Access DTO classes from the EJB deployment to avoid JAXB marshalling issues -->
+      <module name="deployment.music-ejb.jar" services="import"/>
       <!-- Ensure EJB client libraries are available for remote/local injection -->
       <module name="org.jboss.ejb-client"/>
     </dependencies>
