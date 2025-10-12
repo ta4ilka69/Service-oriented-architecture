@@ -25,7 +25,7 @@ import ru.itmo.soa.music.error.InvalidIdFormatException;
 @Produces(MediaType.APPLICATION_XML)
 public class MusicBandResource {
 
-    @EJB
+    @EJB(lookup = "java:global/music-ejb/MusicBandServiceBean!ru.itmo.soa.music.ejb.MusicBandServiceRemote")
     private MusicBandServiceRemote service;
 
     @GET
