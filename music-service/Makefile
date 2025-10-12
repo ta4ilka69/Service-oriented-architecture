@@ -4,7 +4,7 @@ config:
 	cp -r $(WILDFLY_HOME)/standalone/deployments   $(INST_ROOT)/service1/
 
 	cp ../resources/standalone.xml $(INST_ROOT)/service1/configuration/standalone.xml
-	cp ../server.p12 $(INST_ROOT)/service1/configuration/application.keystore
+	cp ../../server.p12 $(INST_ROOT)/service1/configuration/application.keystore
 
 build:
 	mvn -q -DskipTests -f ./pom.xml clean package
