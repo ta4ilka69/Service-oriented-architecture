@@ -4,3 +4,4 @@ grammy-service/target/
 music-service/music-ejb/target/
 .gitignore
 music-service/music-web/target/
+.vscode/settings.json

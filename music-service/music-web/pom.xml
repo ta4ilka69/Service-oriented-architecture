@@ -23,6 +23,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- JAXB API (not in web profile) -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>4.0.2</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- EJB client classes (remote interfaces + referenced DTOs) -->
         <dependency>
             <groupId>ru.itmo.soa</groupId>
