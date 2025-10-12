@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jboss-ejb-client xmlns="urn:jboss:ejb-client:1.2">
     <client-context>
-        <ejb-receivers>
-            <remoting-ejb-receiver outbound-connection-ref="remote-ejb-connection"/>
-        </ejb-receivers>
+        <ejb-receivers/>
     </client-context>
+    <!-- Using local server context; remote receiver not required when web and ejb are co-located
+         or when remoting http-connector is enabled with default profile. -->
 </jboss-ejb-client>
 
 
