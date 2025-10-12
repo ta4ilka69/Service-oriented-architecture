@@ -54,9 +54,17 @@ public class MusicBandResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response create(MusicBandCreateUpdate dto) {
-        MusicBandAllSchema created = service.create(dto);
-        return Response.status(Response.Status.CREATED).entity(created).build();
+    public Response create(String xmlBody) {
+        try {
+            jakarta.xml.bind.JAXBContext ctx = jakarta.xml.bind.JAXBContext.newInstance(MusicBandCreateUpdate.class);
+            jakarta.xml.bind.Unmarshaller u = ctx.createUnmarshaller();
+            java.io.Reader reader = new java.io.StringReader(xmlBody);
+            MusicBandCreateUpdate dto = (MusicBandCreateUpdate) u.unmarshal(reader);
+            MusicBandAllSchema created = service.create(dto);
+            return Response.status(Response.Status.CREATED).entity(created).build();
+        } catch (jakarta.xml.bind.JAXBException e) {
+            throw new jakarta.ws.rs.BadRequestException("Bad Request");
+        }
     }
 
     @GET
