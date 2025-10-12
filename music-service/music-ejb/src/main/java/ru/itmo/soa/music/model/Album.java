@@ -1,5 +1,6 @@
 package ru.itmo.soa.music.model;
 
+import java.io.Serializable;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -11,7 +12,8 @@ import ru.itmo.soa.music.xml.Int64TracksAdapter;
 @XmlRootElement(name = "album")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = {"name", "tracks"})
-public class Album {
+public class Album implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @XmlElement(required = true)
     private String name;

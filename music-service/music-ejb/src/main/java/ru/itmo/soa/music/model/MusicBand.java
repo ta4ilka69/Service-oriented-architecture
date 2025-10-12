@@ -1,5 +1,6 @@
 package ru.itmo.soa.music.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -21,7 +22,8 @@ import jakarta.xml.bind.annotation.XmlType;
         "genre",
         "bestAlbum"
 })
-public class MusicBand {
+public class MusicBand implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private Integer id;
 

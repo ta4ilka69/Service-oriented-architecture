@@ -1,5 +1,6 @@
 package ru.itmo.soa.music.dto;
 
+import java.io.Serializable;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -24,7 +25,8 @@ import ru.itmo.soa.music.xml.Int32NumberOfParticipantsAdapter;
         "genre",
         "bestAlbum"
 })
-public class MusicBandPatchDto {
+public class MusicBandPatchDto implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String name;
     private Coordinates coordinates;
     @XmlJavaTypeAdapter(Int32NumberOfParticipantsAdapter.class)

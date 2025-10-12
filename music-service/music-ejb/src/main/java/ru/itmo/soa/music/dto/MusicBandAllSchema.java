@@ -1,5 +1,6 @@
 package ru.itmo.soa.music.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -26,7 +27,8 @@ import ru.itmo.soa.music.xml.LocalDateAdapter;
         "genre",
         "bestAlbum"
 })
-public class MusicBandAllSchema {
+public class MusicBandAllSchema implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @XmlElement(required = true)
     private Integer id;

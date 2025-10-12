@@ -1,5 +1,6 @@
 package ru.itmo.soa.music.model;
 
+import java.io.Serializable;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
@@ -12,7 +13,8 @@ import ru.itmo.soa.music.xml.Int64YAdapter;
 @XmlRootElement(name = "coordinates")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = {"x", "y"})
-public class Coordinates {
+public class Coordinates implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @XmlElement(required = true)
     @XmlJavaTypeAdapter(FloatXAdapter.class)
