@@ -31,16 +31,12 @@ public class MusicBandResource {
     @GET
     public Response list(
             @QueryParam("sort") List<String> sort,
-            @QueryParam("page") Integer page,
-            @QueryParam("size") Integer size,
+            @QueryParam("page") String pageStr,
+            @QueryParam("size") String sizeStr,
             @QueryParam("filter") List<String> filters
     ) {
-        if (page != null && page < 1) {
-            throw new jakarta.ws.rs.BadRequestException("Invalid query parameter 'page'");
-        }
-        if (size != null && size < 1) {
-            throw new jakarta.ws.rs.BadRequestException("Invalid query parameter 'size'");
-        }
+        Integer page = parsePositiveIntQuery(pageStr, "page");
+        Integer size = parsePositiveIntQuery(sizeStr, "size");
         if ((page != null && size == null) || (size != null && page == null)) {
             page = null;
             size = null;
@@ -133,7 +129,7 @@ public class MusicBandResource {
             if (id < 1) throw new NumberFormatException();
             return id;
         } catch (NumberFormatException ex) {
-            throw new InvalidIdFormatException("Parameter 'id' must be a positive integer.");
+            throw new InvalidIdFormatException("Parameter 'id' must be a positive integer (int32).");
         }
     }
 
@@ -147,7 +143,7 @@ public class MusicBandResource {
         } catch (ru.itmo.soa.music.error.BadRequestException e) {
             throw e;
         } catch (NumberFormatException ex) {
-            throw new InvalidIdFormatException("Parameter 'id' must be a positive integer.");
+            throw new InvalidIdFormatException("Parameter 'id' must be a positive integer (int32).");
         }
     }
 
@@ -159,6 +155,17 @@ public class MusicBandResource {
             return ru.itmo.soa.music.model.Genre.valueOf(value);
         } catch (IllegalArgumentException ex) {
             throw new jakarta.ws.rs.BadRequestException("Invalid query parameter 'genre'");
+        }
+    }
+
+    private Integer parsePositiveIntQuery(String value, String name) {
+        if (value == null) return null;
+        try {
+            long v = Long.parseLong(value);
+            if (v < 1 || v > Integer.MAX_VALUE) throw new NumberFormatException();
+            return (int) v;
+        } catch (NumberFormatException e) {
+            throw new jakarta.ws.rs.BadRequestException("Invalid query parameter '" + name + "'");
         }
     }
 }

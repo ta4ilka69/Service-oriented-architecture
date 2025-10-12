@@ -124,7 +124,7 @@ public class MusicBandResource {
             if (id < 1) throw new NumberFormatException();
             return id;
         } catch (NumberFormatException ex) {
-            throw new InvalidIdFormatException("Parameter 'id' must be a positive integer.");
+            throw new InvalidIdFormatException("Parameter 'id' must be a positive integer (int32).");
         }
     }
 
@@ -138,7 +138,7 @@ public class MusicBandResource {
         } catch (ru.itmo.soa.music.error.BadRequestException e) {
             throw e;
         } catch (NumberFormatException ex) {
-            throw new InvalidIdFormatException("Parameter 'id' must be a positive integer.");
+            throw new InvalidIdFormatException("Parameter 'id' must be a positive integer (int32).");
         }
     }
 
