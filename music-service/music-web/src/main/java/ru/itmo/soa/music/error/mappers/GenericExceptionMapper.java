@@ -23,7 +23,8 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
                     .build();
         }
 
-        ApiError error = new ApiError(500, "Internal Server Error");
+        String msg = (cause.getMessage() == null || cause.getMessage().isBlank()) ? "Internal Server Error" : cause.getMessage();
+        ApiError error = new ApiError(500, msg);
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .type(MediaType.APPLICATION_XML)
                 .entity(error)
