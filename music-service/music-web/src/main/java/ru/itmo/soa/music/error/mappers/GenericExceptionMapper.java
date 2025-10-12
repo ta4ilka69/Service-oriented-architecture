@@ -6,11 +6,18 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import ru.itmo.soa.music.error.ApiError;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Provider
 public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
+    private static final Logger LOGGER = Logger.getLogger(GenericExceptionMapper.class.getName());
     @Override
     public Response toResponse(Throwable exception) {
         Throwable cause = unwrap(exception);
+
+        // Log full stack to server log for diagnostics
+        LOGGER.log(Level.SEVERE, "Unhandled exception in JAX-RS layer", exception);
 
         String className = exception.getClass().getSimpleName();
         boolean isBadRequestLike = className.contains("BadRequest") || className.contains("Param");
@@ -23,7 +30,9 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
                     .build();
         }
 
-        String msg = (cause.getMessage() == null || cause.getMessage().isBlank()) ? "Internal Server Error" : cause.getMessage();
+        String msg = (cause.getMessage() == null || cause.getMessage().isBlank())
+                ? exception.getClass().getName()
+                : cause.getMessage();
         ApiError error = new ApiError(500, msg);
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .type(MediaType.APPLICATION_XML)
