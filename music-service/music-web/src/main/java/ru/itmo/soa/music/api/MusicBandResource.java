@@ -116,8 +116,9 @@ public class MusicBandResource {
     @Path("/count-best-album")
     public Response countBestAlbum(
             @QueryParam("albumName") String albumName,
-            @QueryParam("albumTracks") Long albumTracks
+            @QueryParam("albumTracks") String albumTracksStr
     ) {
+        Long albumTracks = parsePositiveInt64Query(albumTracksStr, "albumTracks");
         long count = service.countBestAlbum(albumName, albumTracks);
         String xml = "<count>" + count + "</count>";
         return Response.ok(xml).type(MediaType.APPLICATION_XML).build();
@@ -165,7 +166,20 @@ public class MusicBandResource {
             if (v < 1 || v > Integer.MAX_VALUE) throw new NumberFormatException();
             return (int) v;
         } catch (NumberFormatException e) {
-            throw new jakarta.ws.rs.BadRequestException("Invalid query parameter '" + name + "'");
+            throw new jakarta.ws.rs.BadRequestException("Invalid query parameter '" + name + "' (int32 >= 1)");
+        }
+    }
+
+    private Long parsePositiveInt64Query(String value, String name) {
+        if (value == null) return null;
+        try {
+            java.math.BigInteger bi = new java.math.BigInteger(value);
+            if (bi.compareTo(java.math.BigInteger.ONE) < 0 || bi.compareTo(java.math.BigInteger.valueOf(Long.MAX_VALUE)) > 0) {
+                throw new NumberFormatException();
+            }
+            return bi.longValue();
+        } catch (java.lang.NumberFormatException e) {
+            throw new jakarta.ws.rs.BadRequestException("Invalid query parameter '" + name + "' (int64 >= 1)");
         }
     }
 }
