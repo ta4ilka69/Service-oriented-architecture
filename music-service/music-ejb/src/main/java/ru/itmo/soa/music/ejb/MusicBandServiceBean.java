@@ -50,6 +50,12 @@ public class MusicBandServiceBean implements MusicBandServiceRemote {
 
     @Override
     public void deleteOneWithGenre(String genre) {
+        // Искусственная задержка для демонстрации расширения пула
+        try {
+            Thread.sleep(2000); // 2 секунды
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         repository.deleteOneWithGenre(genre);
     }
 
@@ -58,5 +64,3 @@ public class MusicBandServiceBean implements MusicBandServiceRemote {
         return repository.countBestAlbum(albumName, albumTracks);
     }
 }
-
-
