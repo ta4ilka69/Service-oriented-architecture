@@ -18,12 +18,22 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             HttpMessageNotReadableException.class,
-            MethodArgumentNotValidException.class,
-            MissingServletRequestParameterException.class,
-            BindException.class
+            MissingServletRequestParameterException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequest(Exception ex) {
         ErrorResponse error = new ErrorResponse(400, "Bad Request");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_XML);
+        return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({
+            MethodArgumentNotValidException.class,
+            BindException.class
+    })
+    public ResponseEntity<ErrorResponse> handleValidationErrors(Exception ex) {
+        // Specific message per spec
+        ErrorResponse error = new ErrorResponse(400, "Bad Request - Invalid name parameter.");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
         return new ResponseEntity<>(error, headers, HttpStatus.BAD_REQUEST);

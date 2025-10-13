@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
+import jakarta.validation.Valid;
 
 import ru.itmo.soa.grammy.dto.ErrorResponse;
 import ru.itmo.soa.grammy.dto.MusicBandAllSchema;
@@ -39,7 +40,7 @@ public class GrammyController {
     @PostMapping(value = "/band/{band-id}/singles/add", consumes = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<?> addSingle(
             @PathVariable("band-id") String bandId,
-            @RequestBody SingleSchema body
+            @Valid @RequestBody SingleSchema body
     ) {
         try {
             // Validate that the band exists and read current albumsCount
@@ -89,7 +90,7 @@ public class GrammyController {
     @PostMapping(value = "/band/{band-id}/participants/add", consumes = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<?> addParticipant(
             @PathVariable("band-id") String bandId,
-            @RequestBody ParticipantSchema body
+            @Valid @RequestBody ParticipantSchema body
     ) {
         try {
             // Call music-service PATCH to increase numberOfParticipants by 1

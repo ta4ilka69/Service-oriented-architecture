@@ -1,9 +1,11 @@
 package ru.itmo.soa.grammy.dto;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import jakarta.validation.constraints.NotBlank;
 
 @JacksonXmlRootElement(localName = "participantSchema")
 public class ParticipantSchema {
+    @NotBlank
     private String name;
 
     public String getName() { return name; }
