@@ -19,13 +19,19 @@ start:
 		-Dconsul.host=127.0.0.1 -Dconsul.port=8500
 
 stop:
-	$(WILDFLY_HOME)/bin/jboss-cli.sh --connect command=:shutdown || true
+	$(WILDFLY_HOME)/bin/jboss-cli.sh --connect --controller=localhost:5290 command=:shutdown || true
 
 redeploy:
 	rm -f $(INST_ROOT)/service1/deployments/music-ejb.jar || true
 	rm -f $(INST_ROOT)/service1/deployments/music-web.war || true
 	$(MAKE) deploy
 
-.PHONY: config build deploy start stop redeploy
+check-beans:
+	$(WILDFLY_HOME)/bin/jboss-cli.sh --connect --controller=localhost:5290 --commands='/deployment=music-ejb.jar/subsystem=ejb3/stateless-session-bean=MusicBandServiceBean:read-resource(include-runtime=true)'
+
+check-consul:
+	curl -s http://127.0.0.1:8500/v1/agent/services
+
+.PHONY: config build deploy start stop redeploy check-beans check-consul
 
 
