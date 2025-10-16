@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
         secure: false,
       },
       '/api/v1/grammy': {
-        target: 'https://localhost:5314',
+        target: 'http://localhost:5315',
         changeOrigin: true,
         secure: false,
       },

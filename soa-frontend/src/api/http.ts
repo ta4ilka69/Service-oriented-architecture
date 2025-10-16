@@ -18,7 +18,7 @@ const parser = new XMLParser({
 
 export async function requestXML(method: string, url: string, bodyXml?: string): Promise<HttpResult> {
   const MUSIC_BASE  = (import.meta as any).env?.VITE_MUSIC_API_HTTPS  || 'https://localhost:5252'
-  const GRAMMY_BASE = (import.meta as any).env?.VITE_GRAMMY_API_HTTPS || 'https://localhost:5314'
+  const GRAMMY_BASE = (import.meta as any).env?.VITE_GRAMMY_API_HTTPS  || 'https://localhost:5315'
 
   const resolveHttpsUrl = (input: string): string => {
     const base = input.startsWith('/music-bands')
