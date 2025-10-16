@@ -58,11 +58,26 @@ cloud_config: cloud_build
 cloud_up: cloud_config
 	export _JAVA_OPTIONS="-Xmx256m -XX:MaxMetaspaceSize=256m"
 	java -jar $(INST_CLOUD)/eureka-server/eureka-server-*.jar > $(LOG_DIR)/eureka-server.log 2>&1 & echo $$! > $(PID_DIR)/eureka-server.pid
-	sleep 20
+	sleep 3
 	java -Dspring.cloud.config.server.native.search-locations=file:$(INST_CLOUD)/config-repo -jar $(INST_CLOUD)/config-server/config-server-*.jar > $(LOG_DIR)/config-server.log 2>&1 & echo $$! > $(PID_DIR)/config-server.pid
-	sleep 20
+	sleep 3
 	java -Djavax.net.ssl.trustStore=$(INST_CLOUD)/grammy-service/configuration/truststore.jks -Djavax.net.ssl.trustStorePassword=$(PASS) -jar $(INST_CLOUD)/grammy-service/grammy-service.jar > $(LOG_DIR)/grammy-service.log 2>&1 & echo $$! > $(PID_DIR)/grammy-service.pid
-	sleep 20
+	sleep 3
+	java -Dserver.ssl.enabled=true \
+	     -Dserver.ssl.key-store=$(INST_CLOUD)/api-gateway/configuration/application.keystore \
+	     -Dserver.ssl.key-store-type=PKCS12 \
+	     -Dserver.ssl.key-store-password=$(PASS) \
+	     -Dserver.ssl.key-alias=server2 \
+	     -jar $(INST_CLOUD)/api-gateway/api-gateway-*.jar > $(LOG_DIR)/api-gateway.log 2>&1 & echo $$! > $(PID_DIR)/api-gateway.pid
+
+cloud_up_helios: cloud_config
+	export _JAVA_OPTIONS="-Xmx256m -XX:MaxMetaspaceSize=256m"
+	java -jar $(INST_CLOUD)/eureka-server/eureka-server-*.jar > $(LOG_DIR)/eureka-server.log 2>&1 & echo $$! > $(PID_DIR)/eureka-server.pid
+	sleep 160
+	java -Dspring.cloud.config.server.native.search-locations=file:$(INST_CLOUD)/config-repo -jar $(INST_CLOUD)/config-server/config-server-*.jar > $(LOG_DIR)/config-server.log 2>&1 & echo $$! > $(PID_DIR)/config-server.pid
+	sleep 160
+	java -Djavax.net.ssl.trustStore=$(INST_CLOUD)/grammy-service/configuration/truststore.jks -Djavax.net.ssl.trustStorePassword=$(PASS) -jar $(INST_CLOUD)/grammy-service/grammy-service.jar > $(LOG_DIR)/grammy-service.log 2>&1 & echo $$! > $(PID_DIR)/grammy-service.pid
+	sleep 160
 	java -Dserver.ssl.enabled=true \
 	     -Dserver.ssl.key-store=$(INST_CLOUD)/api-gateway/configuration/application.keystore \
 	     -Dserver.ssl.key-store-type=PKCS12 \
