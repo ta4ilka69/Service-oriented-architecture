@@ -33,47 +33,49 @@ import java.util.List;
 @Configuration
 public class RestClientConfig {
 
-    @Bean
-    public XmlMapper xmlMapper() {
-        return new XmlMapper();
-    }
+        @Bean
+        public XmlMapper xmlMapper() {
+                return new XmlMapper();
+        }
 
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder, XmlMapper xmlMapper)
-            throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        TrustStrategy trustAll = (chain, authType) -> true;
-        SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, trustAll).build();
-        SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext,
-                NoopHostnameVerifier.INSTANCE);
+        @Bean
+        public RestTemplate restTemplate(RestTemplateBuilder builder, XmlMapper xmlMapper)
+                        throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+                TrustStrategy trustAll = (chain, authType) -> true;
+                SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, trustAll).build();
+                SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext,
+                                NoopHostnameVerifier.INSTANCE);
 
-        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register("https", sslSocketFactory)
-                .register("http", new PlainConnectionSocketFactory())
-                .build();
+                Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder
+                                .<ConnectionSocketFactory>create()
+                                .register("https", sslSocketFactory)
+                                .register("http", new PlainConnectionSocketFactory())
+                                .build();
 
-        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(
-                socketFactoryRegistry);
+                PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(
+                                socketFactoryRegistry);
 
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectionRequestTimeout(Timeout.ofSeconds(5))
-                .setResponseTimeout(10, TimeUnit.SECONDS)
-                .build();
+                RequestConfig requestConfig = RequestConfig.custom()
+                                .setConnectionRequestTimeout(Timeout.ofSeconds(5))
+                                .setResponseTimeout(10, TimeUnit.SECONDS)
+                                .build();
 
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .setConnectionManager(connectionManager)
-                .setDefaultRequestConfig(requestConfig)
-                .build();
+                CloseableHttpClient httpClient = HttpClients.custom()
+                                .setConnectionManager(connectionManager)
+                                .setDefaultRequestConfig(requestConfig)
+                                .build();
 
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+                HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
+                                httpClient);
 
-        RestTemplate restTemplate = builder
-                .requestFactory(() -> requestFactory)
-                .build();
+                RestTemplate restTemplate = builder
+                                .requestFactory(() -> requestFactory)
+                                .build();
 
-        List<HttpMessageConverter<?>> converters = new ArrayList<>(restTemplate.getMessageConverters());
-        converters.removeIf(c -> c instanceof MappingJackson2XmlHttpMessageConverter);
-        converters.add(new MappingJackson2XmlHttpMessageConverter(xmlMapper));
-        restTemplate.setMessageConverters(converters);
-        return restTemplate;
-    }
+                List<HttpMessageConverter<?>> converters = new ArrayList<>(restTemplate.getMessageConverters());
+                converters.removeIf(c -> c instanceof MappingJackson2XmlHttpMessageConverter);
+                converters.add(new MappingJackson2XmlHttpMessageConverter(xmlMapper));
+                restTemplate.setMessageConverters(converters);
+                return restTemplate;
+        }
 }

@@ -1,0 +1,51 @@
+server:
+  port: 5315
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:*"
+              - "https://localhost:*"
+              - "https://127.0.0.1:5314"
+              - "http://127.0.0.1:*"
+              - "https://127.0.0.1:*"
+            allowedMethods:
+              - GET
+              - POST
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+            maxAge: 3600
+      routes:
+        - id: grammy
+          uri: lb://grammy-service
+          predicates:
+            - Path=/api/v1/grammy/**
+          filters:
+            - StripPrefix=0
+    loadbalancer:
+      healthcheck:
+        enabled: true
+      clients:
+        grammy-service:
+          instances:
+            - host: 127.0.0.1
+              port: 8765
+              secure: false
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    preferIpAddress: true
+
+
