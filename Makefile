@@ -56,6 +56,7 @@ cloud_config: cloud_build
 	cp ../server2.p12 $(INST_CLOUD)/api-gateway/configuration/application.keystore
 
 cloud_up: cloud_config
+	export _JAVA_OPTIONS="-Xmx256m -XX:MaxMetaspaceSize=256m"
 	java -jar $(INST_CLOUD)/eureka-server/eureka-server-*.jar > $(LOG_DIR)/eureka-server.log 2>&1 & echo $$! > $(PID_DIR)/eureka-server.pid
 	sleep 20
 	java -Dspring.cloud.config.server.native.search-locations=file:$(INST_CLOUD)/config-repo -jar $(INST_CLOUD)/config-server/config-server-*.jar > $(LOG_DIR)/config-server.log 2>&1 & echo $$! > $(PID_DIR)/config-server.pid
