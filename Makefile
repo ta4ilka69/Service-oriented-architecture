@@ -94,7 +94,7 @@ ui_config:
 	cp -r $(WILDFLY_HOME)/standalone/deployments   $(INST_ROOT)/service2/
 	cp ./resources/standalone-grammy.xml $(INST_ROOT)/service2/configuration/standalone.xml
 
-deploy_ui_wildfly: ui_build_war ui_config
+deploy_ui_wildfly: ui_config
 	cp ./soa-frontend/ui.war $(INST_ROOT)/service2/deployments/ui.war
 
 start_ui_wildfly: deploy_ui_wildfly
