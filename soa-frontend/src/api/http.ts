@@ -18,7 +18,7 @@ const parser = new XMLParser({
 
 export async function requestXML(method: string, url: string, bodyXml?: string): Promise<HttpResult> {
   const MUSIC_BASE  = (import.meta as any).env?.VITE_MUSIC_API_HTTPS  || 'https://localhost:5252'
-  const GRAMMY_BASE = (import.meta as any).env?.VITE_GRAMMY_API_HTTPS  || 'https://localhost:5315'
+  const GRAMMY_BASE = (import.meta as any).env?.VITE_GRAMMY_API_HTTPS  || 'https://localhost:5317'
 
   const resolveHttpsUrl = (input: string): string => {
     const base = input.startsWith('/music-bands')
@@ -29,7 +29,9 @@ export async function requestXML(method: string, url: string, bodyXml?: string):
   }
 
   const targetUrl = resolveHttpsUrl(url)
-  const headers: Record<string, string> = { 'Accept': 'application/xml' }
+  const headers: Record<string, string> = {
+    'Accept': 'application/xml'
+  }
   if (bodyXml) headers['Content-Type'] = 'application/xml'
 
   try {
@@ -37,7 +39,10 @@ export async function requestXML(method: string, url: string, bodyXml?: string):
       method,
       headers,
       body: bodyXml,
-    })
+      mode: 'cors',
+      credentials: 'omit',
+      redirect: 'follow',
+    } as RequestInit)
 
     const text = await res.text()
 

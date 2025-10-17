@@ -8,6 +8,10 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: '127.0.0.1',
     port: 5173,
+    cors: { origin: '*' },
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
     proxy: {
       '/music-bands': {
         target: 'https://localhost:5252',
@@ -15,7 +19,7 @@ export default defineConfig(({ mode }) => ({
         secure: false,
       },
       '/api/v1/grammy': {
-        target: 'http://localhost:5315',
+        target: 'https://localhost:5317',
         changeOrigin: true,
         secure: false,
       },
