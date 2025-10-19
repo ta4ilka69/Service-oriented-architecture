@@ -1,0 +1,77 @@
+version: "3.9"
+
+networks:
+  soa-net:
+    driver: bridge
+
+services:
+  eureka-server:
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    image: soa/eureka-server:latest
+    container_name: eureka-server
+    networks: [soa-net]
+    ports:
+      - "8761:8761"
+    environment:
+      - JAVA_OPTS=-Dserver.port=8761
+      - INST_ROOT=${INST_ROOT}
+      - INST_CLOUD=${INST_CLOUD}
+      - PASS=${PASS}
+      - IP=${IP}
+
+  config-server:
+    build:
+      context: ./config-server
+      dockerfile: Dockerfile
+    image: soa/config-server:latest
+    container_name: config-server
+    networks: [soa-net]
+    depends_on: [eureka-server]
+    ports:
+      - "7843:7843"
+    environment:
+      - JAVA_OPTS=-Dspring.cloud.config.server.native.search-locations=file:/config-repo -Deureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka/
+      - INST_ROOT=${INST_ROOT}
+      - INST_CLOUD=${INST_CLOUD}
+      - PASS=${PASS}
+      - IP=${IP}
+    volumes:
+      - ./config-repo:/config-repo:ro
+
+  grammy-service:
+    build:
+      context: ./grammy-service
+      dockerfile: Dockerfile
+    image: soa/grammy-service:latest
+    container_name: grammy-service
+    networks: [soa-net]
+    depends_on: [eureka-server, config-server]
+    ports:
+      - "8765:8765"
+    environment:
+      - PASS=${PASS}
+      - INST_ROOT=${INST_ROOT}
+      - INST_CLOUD=${INST_CLOUD}
+      - IP=${IP}
+      - JAVA_OPTS=-Dspring.config.import=optional:configserver:http://config-server:7843 -Deureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka/ -Dmusic.service.base-url=https://host.docker.internal:5252
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    image: soa/api-gateway:latest
+    container_name: api-gateway
+    networks: [soa-net]
+    depends_on: [eureka-server, config-server, grammy-service]
+    ports:
+      - "5317:5317"
+    environment:
+      - PASS=${PASS}
+      - INST_ROOT=${INST_ROOT}
+      - INST_CLOUD=${INST_CLOUD}
+      - IP=${IP}
+      - JAVA_OPTS=-Dserver.port=5317 -Dserver.ssl.enabled=true -Dserver.ssl.key-store=/app/certs/server2.p12 -Dserver.ssl.key-store-type=PKCS12 -Dserver.ssl.key-store-password=${PASS} -Dserver.ssl.key-alias=server2 -Dspring.config.import=optional:configserver:http://config-server:7843 -Deureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka/
+    volumes:
+      - ../server2.p12:/app/certs/server2.p12:ro

@@ -6,3 +6,7 @@ wildfly-30.0.0.Final/
 
 /soa.code-workspace
 /.DS_Store
+**/.DS_Store
+
+**/*.keystore
+**/*.jks

@@ -35,10 +35,10 @@ LOG_DIR?=$(INST_CLOUD)/.logs
 PID_DIR?=$(INST_CLOUD)/.pids
 
 cloud_build:
-	cd ./config-server && mvn -q -DskipTests package spring-boot:repackage && cd ..
-	cd ./eureka-server && mvn -q -DskipTests package spring-boot:repackage && cd ..
-	cd ./grammy-service && mvn -q -DskipTests package spring-boot:repackage && cd ..
-	cd ./api-gateway && mvn -q -DskipTests package spring-boot:repackage && cd ..
+	cd ./config-server && mvn clean -q -DskipTests package && cd ..
+	cd ./eureka-server && mvn clean -q -DskipTests package && cd ..
+	cd ./grammy-service && mvn clean -q -DskipTests package && cd ..
+	cd ./api-gateway && mvn clean -q -DskipTests package && cd ..
 
 cloud_config: cloud_build
 	mkdir -p $(PID_DIR)
@@ -52,8 +52,11 @@ cloud_config: cloud_build
 	cp ./api-gateway/target/api-gateway-*.jar $(INST_CLOUD)/api-gateway/
 	rm -rf $(INST_CLOUD)/config-repo && cp -r ./config-repo $(INST_CLOUD)/
 	cp ../server2.p12 $(INST_CLOUD)/grammy-service/configuration/application.keystore
+	cp ../server2.p12 grammy-service/application.keystore
 	keytool -importcert -alias service1-cert -file ../service1.crt -keystore $(INST_CLOUD)/grammy-service/configuration/truststore.jks -storepass $(PASS) -noprompt || true
+	cp $(INST_CLOUD)/grammy-service/configuration/truststore.jks grammy-service/truststore.jks
 	cp ../server2.p12 $(INST_CLOUD)/api-gateway/configuration/application.keystore
+	cp ../server2.p12 api-gateway/application.keystore
 
 cloud_up: cloud_config
 	java -jar $(INST_CLOUD)/eureka-server/eureka-server-*.jar > $(LOG_DIR)/eureka-server.log 2>&1 & echo $$! > $(PID_DIR)/eureka-server.pid
