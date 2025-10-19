@@ -1,10 +1,12 @@
 wildfly-30.0.0.Final/
-music-service/target/
-grammy-service/target/
-music-service/music-ejb/target/
+**/target/
+**/**/target/
 .gitignore
-music-service/music-web/target/
 .vscode/settings.json
 
 /soa.code-workspace
 /.DS_Store
+**/.DS_Store
+
+**/*.keystore
+**/*.jks

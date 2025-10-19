@@ -40,8 +40,7 @@ public class GrammyController {
     @PostMapping(value = "/band/{band-id}/singles/add", consumes = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<?> addSingle(
             @PathVariable("band-id") String bandId,
-            @Valid @RequestBody SingleSchema body
-    ) {
+            @Valid @RequestBody SingleSchema body) {
         try {
             // Validate that the band exists and read current albumsCount
             String url = musicServiceBaseUrl + "/music-bands/" + bandId;
@@ -70,8 +69,7 @@ public class GrammyController {
                     url,
                     HttpMethod.PATCH,
                     new HttpEntity<>(patch, patchHeaders),
-                    MusicBandAllSchema.class
-            );
+                    MusicBandAllSchema.class);
 
             // Create and return Single
             Single created = new Single();
@@ -90,8 +88,7 @@ public class GrammyController {
     @PostMapping(value = "/band/{band-id}/participants/add", consumes = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<?> addParticipant(
             @PathVariable("band-id") String bandId,
-            @Valid @RequestBody ParticipantSchema body
-    ) {
+            @Valid @RequestBody ParticipantSchema body) {
         try {
             // Call music-service PATCH to increase numberOfParticipants by 1
             String url = musicServiceBaseUrl + "/music-bands/" + bandId;
@@ -120,8 +117,7 @@ public class GrammyController {
                             url,
                             HttpMethod.PATCH,
                             new HttpEntity<>(patch, headers),
-                            MusicBandAllSchema.class
-                    )
+                            MusicBandAllSchema.class)
                     .getBody();
             return ResponseEntity.status(HttpStatus.CREATED).body(updated);
         } catch (RestClientResponseException ex) {
@@ -133,5 +129,3 @@ public class GrammyController {
         }
     }
 }
-
-
