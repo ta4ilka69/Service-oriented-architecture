@@ -70,7 +70,6 @@ public class ConsulRegistrar {
         } catch (IOException ignored) {
         }
     }
-
     private void httpPut(String url, String body) throws IOException {
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setRequestMethod("PUT");
@@ -80,7 +79,6 @@ public class ConsulRegistrar {
             byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
             conn.getOutputStream().write(bytes);
         }
-        int code = conn.getResponseCode();
         conn.disconnect();
     }
 }
