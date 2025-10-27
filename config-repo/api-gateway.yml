@@ -41,12 +41,6 @@ spring:
     loadbalancer:
       healthcheck:
         enabled: true
-      clients:
-        grammy-service:
-          instances:
-            - host: 127.0.0.1
-              port: 8765
-              secure: false
 
 eureka:
   client:
