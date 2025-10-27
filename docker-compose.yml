@@ -21,6 +21,15 @@ services:
       - PASS=${PASS}
       - IP=${IP}
 
+  wait-eureka-to-config:
+    image: alpine:3.20
+    networks: [soa-net]
+    depends_on:
+      eureka-server:
+        condition: service_started
+    command: ["sh", "-c", "sleep 5"]
+    restart: "no"
+
   config-server:
     build:
       context: ./config-server
@@ -28,7 +37,9 @@ services:
     image: soa/config-server:latest
     container_name: config-server
     networks: [soa-net]
-    depends_on: [eureka-server]
+    depends_on:
+      wait-eureka-to-config:
+        condition: service_completed_successfully
     ports:
       - "7843:7843"
     environment:
@@ -40,6 +51,15 @@ services:
     volumes:
       - ./config-repo:/config-repo:ro
 
+  wait-config-to-grammy:
+    image: alpine:3.20
+    networks: [soa-net]
+    depends_on:
+      config-server:
+        condition: service_started
+    command: ["sh", "-c", "sleep 5"]
+    restart: "no"
+
   grammy-service:
     build:
       context: ./grammy-service
@@ -47,15 +67,56 @@ services:
     image: soa/grammy-service:latest
     container_name: grammy-service
     networks: [soa-net]
-    depends_on: [eureka-server, config-server]
-    ports:
-      - "8765:8765"
+    depends_on:
+      wait-config-to-grammy:
+        condition: service_completed_successfully
     environment:
       - PASS=${PASS}
       - INST_ROOT=${INST_ROOT}
       - INST_CLOUD=${INST_CLOUD}
       - IP=${IP}
       - JAVA_OPTS=-Dspring.config.import=optional:configserver:http://config-server:7843 -Deureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka/ -Dmusic.service.base-url=https://host.docker.internal:5252
+
+  grammy-service-2:
+    image: soa/grammy-service:latest
+    container_name: grammy-service-2
+    networks: [soa-net]
+    depends_on:
+      wait-config-to-grammy:
+        condition: service_completed_successfully
+    environment:
+      - PASS=${PASS}
+      - INST_ROOT=${INST_ROOT}
+      - INST_CLOUD=${INST_CLOUD}
+      - IP=${IP}
+      - JAVA_OPTS=-Dspring.config.import=optional:configserver:http://config-server:7843 -Deureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka/ -Dmusic.service.base-url=https://host.docker.internal:5252
+
+  grammy-service-3:
+    image: soa/grammy-service:latest
+    container_name: grammy-service-3
+    networks: [soa-net]
+    depends_on:
+      wait-config-to-grammy:
+        condition: service_completed_successfully
+    environment:
+      - PASS=${PASS}
+      - INST_ROOT=${INST_ROOT}
+      - INST_CLOUD=${INST_CLOUD}
+      - IP=${IP}
+      - JAVA_OPTS=-Dspring.config.import=optional:configserver:http://config-server:7843 -Deureka.client.serviceUrl.defaultZone=http://eureka-server:8761/eureka/ -Dmusic.service.base-url=https://host.docker.internal:5252
+
+  wait-grammy-to-gateway:
+    image: alpine:3.20
+    networks: [soa-net]
+    depends_on:
+      grammy-service:
+        condition: service_started
+      grammy-service-2:
+        condition: service_started
+      grammy-service-3:
+        condition: service_started
+    command: ["sh", "-c", "sleep 5"]
+    restart: "no"
 
   api-gateway:
     build:
@@ -64,7 +125,9 @@ services:
     image: soa/api-gateway:latest
     container_name: api-gateway
     networks: [soa-net]
-    depends_on: [eureka-server, config-server, grammy-service]
+    depends_on:
+      wait-grammy-to-gateway:
+        condition: service_completed_successfully
     ports:
       - "5317:5317"
     environment:
