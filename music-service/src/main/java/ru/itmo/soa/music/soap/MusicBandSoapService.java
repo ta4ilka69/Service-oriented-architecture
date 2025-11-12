@@ -23,7 +23,7 @@ import ru.itmo.soa.music.model.Genre;
 import ru.itmo.soa.music.repo.MusicBandRepository;
 
 @WebService(
-        serviceName = "MusicBandService",
+        serviceName = "MusicBandSoapService",
         portName = "MusicBandPort",
         targetNamespace = "http://music.soa.itmo.ru/",
         name = "MusicBandSoapService"
