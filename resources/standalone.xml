@@ -482,6 +482,7 @@
         <subsystem xmlns="urn:jboss:domain:webservices:2.0" statistics-enabled="${wildfly.webservices.statistics-enabled:${wildfly.statistics-enabled:false}}">
             <wsdl-host>${jboss.bind.address:127.0.0.1}</wsdl-host>
             <modify-wsdl-address>false</modify-wsdl-address>
+            <wsdl-port>8912</wsdl-port>
             <wsdl-secure-port>5252</wsdl-secure-port>
             <endpoint-config name="Standard-Endpoint-Config"/>
             <endpoint-config name="Recording-Endpoint-Config">
@@ -503,7 +504,7 @@
     </interfaces>
     <socket-binding-group name="standard-sockets" default-interface="public" port-offset="${jboss.socket.binding.port-offset:0}">
         <socket-binding name="ajp" port="${jboss.ajp.port:8011}"/>
-        <socket-binding name="http" interface="management" port="${jboss.http.port:8912}"/>
+        <socket-binding name="http" port="${jboss.http.port:8912}"/>
         <socket-binding name="https" port="5252"/>
         <socket-binding name="management-http" interface="management" port="${jboss.management.http.port:5290}"/>
         <socket-binding name="management-https" interface="management" port="${jboss.management.https.port:5293}"/>
