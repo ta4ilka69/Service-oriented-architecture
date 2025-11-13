@@ -4,6 +4,14 @@
   "minMuleVersion": "4.6.0",
   "secureProperties": [],
   "requiredProduct": "MULE_EE",
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {
+      "groupId": "com.itmo.soa",
+      "artifactId": "music-proxy",
+      "version": "1.0.0"
+    }
+  },
   "classLoaderModelLoaderDescriptor": {
     "id": "mule",
     "attributes": {
