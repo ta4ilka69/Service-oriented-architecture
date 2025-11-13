@@ -1,3 +1,8 @@
+MULE_HOME ?= /home/studs/s367854/mule-enterprise-standalone-4.10.1
+MULE_TRUSTSTORE ?= $(MULE_HOME)/conf/truststore.jks
+MULE_TRUSTSTORE_PASS ?= q23886000
+MULE_CERT ?= ../service1.crt
+
 config:
 	mkdir -p $(INST_ROOT)/service1
 	mkdir -p $(INST_ROOT)/service2
@@ -22,11 +27,27 @@ config:
 
 	keytool -importcert -alias service1-cert -file ../service1.crt -keystore $(INST_ROOT)/service2/configuration/truststore.jks -storepass $(PASS) -noprompt
 
+
+mule-truststore:
+	keytool -importcert -alias service1 -file $(MULE_CERT) -keystore $(MULE_TRUSTSTORE) -storepass $(MULE_TRUSTSTORE_PASS) -noprompt || true
+	keytool -list -keystore $(MULE_TRUSTSTORE) -storepass $(MULE_TRUSTSTORE_PASS) | grep service1 || true
+
+mule-start:
+	$(MULE_HOME)/bin/mule start
+
+mule-console:
+	$(MULE_HOME)/bin/mule console
+
+mule-stop:
+	$(MULE_HOME)/bin/mule stop
+
+mule: mule-truststore mule-start
+
 first:
 	$(WILDFLY_HOME)/bin/standalone.sh -c standalone.xml -Djboss.server.base.dir=$(INST_ROOT)/service1
 
 second:
 	$(WILDFLY_HOME)/bin/standalone.sh -c standalone.xml -Djboss.server.base.dir=$(INST_ROOT)/service2 -Djboss.socket.binding.port-offset=52 -Djavax.net.ssl.trustStore=$(INST_ROOT)/service2/configuration/truststore.jks -Djavax.net.ssl.trustStorePassword=$(PASS) -Dmusic.service.base-url=https://localhost:5252
 
-.PHONY: config first second
+.PHONY: config first second mule mule-start mule-stop mule-console mule-truststore
 
