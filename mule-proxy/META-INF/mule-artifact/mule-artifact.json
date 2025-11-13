@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "minMuleVersion": "4.6.0",
   "secureProperties": [],
+  "requiredProduct": "MULE_EE",
   "classLoaderModelLoaderDescriptor": {
     "id": "mule",
     "attributes": {
