@@ -1,5 +1,7 @@
 {
   "minMuleVersion": "4.6.0",
+  "name": "music-proxy",
+  "version": "1.0.0",
   "secureProperties": [],
   "classLoaderModelLoaderDescriptor": {
     "id": "mule",
