@@ -42,12 +42,15 @@ mule-console:
 mule-stop:
 	$(MULE_HOME)/bin/mule stop
 
+mule-keystore:
+	cp ../server2.p12 $(MULE_HOME)/conf/server2.p12
+
 mule-deploy:
 	rm -rf $(MULE_HOME)/apps/$(MULE_APP_NAME)
 	mkdir -p $(MULE_HOME)/apps/$(MULE_APP_NAME)
 	cp -r ./mule-proxy/* $(MULE_HOME)/apps/$(MULE_APP_NAME)/
 
-mule: mule-truststore mule-deploy mule-start
+mule: mule-truststore mule-keystore mule-deploy mule-start
 
 first:
 	$(WILDFLY_HOME)/bin/standalone.sh -c standalone.xml -Djboss.server.base.dir=$(INST_ROOT)/service1
@@ -55,5 +58,5 @@ first:
 second:
 	$(WILDFLY_HOME)/bin/standalone.sh -c standalone.xml -Djboss.server.base.dir=$(INST_ROOT)/service2 -Djboss.socket.binding.port-offset=52 -Djavax.net.ssl.trustStore=$(INST_ROOT)/service2/configuration/truststore.jks -Djavax.net.ssl.trustStorePassword=$(PASS) -Dmusic.service.base-url=https://localhost:5252
 
-.PHONY: config first second mule mule-start mule-stop mule-console mule-truststore mule-deploy
+.PHONY: config first second mule mule-start mule-stop mule-console mule-truststore mule-deploy mule-keystore
 
