@@ -2,6 +2,7 @@ MULE_HOME ?= /home/studs/s367854/mule-enterprise-standalone-4.10.1
 MULE_TRUSTSTORE ?= $(MULE_HOME)/conf/truststore.jks
 MULE_TRUSTSTORE_PASS ?= q23886000
 MULE_CERT ?= ../service1.crt
+MULE_APP_NAME ?= music-proxy
 
 config:
 	mkdir -p $(INST_ROOT)/service1
@@ -41,7 +42,12 @@ mule-console:
 mule-stop:
 	$(MULE_HOME)/bin/mule stop
 
-mule: mule-truststore mule-start
+mule-deploy:
+	rm -rf $(MULE_HOME)/apps/$(MULE_APP_NAME)
+	mkdir -p $(MULE_HOME)/apps/$(MULE_APP_NAME)
+	cp -r ./mule-proxy/* $(MULE_HOME)/apps/$(MULE_APP_NAME)/
+
+mule: mule-truststore mule-deploy mule-start
 
 first:
 	$(WILDFLY_HOME)/bin/standalone.sh -c standalone.xml -Djboss.server.base.dir=$(INST_ROOT)/service1
@@ -49,5 +55,5 @@ first:
 second:
 	$(WILDFLY_HOME)/bin/standalone.sh -c standalone.xml -Djboss.server.base.dir=$(INST_ROOT)/service2 -Djboss.socket.binding.port-offset=52 -Djavax.net.ssl.trustStore=$(INST_ROOT)/service2/configuration/truststore.jks -Djavax.net.ssl.trustStorePassword=$(PASS) -Dmusic.service.base-url=https://localhost:5252
 
-.PHONY: config first second mule mule-start mule-stop mule-console mule-truststore
+.PHONY: config first second mule mule-start mule-stop mule-console mule-truststore mule-deploy
 
