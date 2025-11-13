@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "minMuleVersion": "4.6.0",
   "secureProperties": [],
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [],
+      "exportedResources": []
+    }
+  },
   "configs": [
     "mule-config.xml"
   ]
