@@ -10,8 +10,12 @@
         http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/current/mule-ws.xsd
         http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
 
-    <!-- HTTP Listener for REST proxy (HTTP for now; can switch to HTTPS later) -->
-    <http:listener-config name="httpListener" host="0.0.0.0" port="${rest.port}"/>
+    <!-- HTTPS Listener for REST proxy -->
+    <http:listener-config name="httpsListener" host="0.0.0.0" port="${rest.port}">
+        <http:tls-context>
+            <tls:key-store path="${mule.keystore.path}" password="${mule.keystore.pass}" type="PKCS12"/>
+        </http:tls-context>
+    </http:listener-config>
 
     <!-- HTTPS requester with truststore to call SOAP over TLS -->
     <http:requester-config name="httpsRequester" protocol="HTTPS">
@@ -31,7 +35,7 @@
 
     <!-- GET /music-bands -> ListMusicBands -->
     <flow name="get-music-bands">
-        <http:listener config-ref="httpListener" path="/music-bands" allowedMethods="GET"/>
+        <http:listener config-ref="httpsListener" path="/music-bands" allowedMethods="GET"/>
         <set-payload><![CDATA[%dw 2.0
 output application/java
 var q = attributes.queryParams default {}
