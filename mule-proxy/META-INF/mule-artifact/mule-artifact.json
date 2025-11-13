@@ -1,0 +1,11 @@
+{
+  "name": "music-proxy",
+  "version": "1.0.0",
+  "minMuleVersion": "4.6.0",
+  "secureProperties": [],
+  "configs": [
+    "mule-config.xml"
+  ]
+}
+
+
