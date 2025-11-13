@@ -47,10 +47,18 @@ mule-keystore:
 
 mule-deploy:
 	rm -rf $(MULE_HOME)/apps/$(MULE_APP_NAME)
-	mkdir -p $(MULE_HOME)/apps/$(MULE_APP_NAME)
-	cp -r ./mule-proxy/* $(MULE_HOME)/apps/$(MULE_APP_NAME)/
+	# Prefer packaged app if available
+	if [ -f ./mule-proxy/target/$(MULE_APP_NAME)-1.0.0-mule-application.jar ]; then \
+		cp ./mule-proxy/target/$(MULE_APP_NAME)-1.0.0-mule-application.jar $(MULE_HOME)/apps/; \
+	else \
+		mkdir -p $(MULE_HOME)/apps/$(MULE_APP_NAME); \
+		cp -r ./mule-proxy/* $(MULE_HOME)/apps/$(MULE_APP_NAME)/; \
+	fi
 
-mule: mule-truststore mule-keystore mule-deploy mule-start
+mule-build:
+	cd ./mule-proxy && mvn -q -DskipTests package && cd ..
+
+mule: mule-truststore mule-keystore mule-build mule-deploy mule-start
 
 first:
 	$(WILDFLY_HOME)/bin/standalone.sh -c standalone.xml -Djboss.server.base.dir=$(INST_ROOT)/service1

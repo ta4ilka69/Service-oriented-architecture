@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.itmo.soa</groupId>
+  <artifactId>music-proxy</artifactId>
+  <version>1.0.0</version>
+  <packaging>mule-application</packaging>
+  <name>music-proxy</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <mule.maven.plugin.version>3.7.1</mule.maven.plugin.version>
+    <mule.runtime.version>4.10.1</mule.runtime.version>
+    <mule.http.connector.version>1.10.0</mule.http.connector.version>
+    <mule.wsc.connector.version>1.6.8</mule.wsc.connector.version>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.mule.tools.maven</groupId>
+        <artifactId>mule-maven-plugin</artifactId>
+        <version>${mule.maven.plugin.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <classifier>mule-application</classifier>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <!-- HTTP Connector -->
+    <dependency>
+      <groupId>org.mule.connectors</groupId>
+      <artifactId>mule-http-connector</artifactId>
+      <version>${mule.http.connector.version}</version>
+      <classifier>mule-plugin</classifier>
+      <type>mule-plugin</type>
+    </dependency>
+    <!-- Web Service Consumer -->
+    <dependency>
+      <groupId>org.mule.connectors</groupId>
+      <artifactId>mule-wsc-connector</artifactId>
+      <version>${mule.wsc.connector.version}</version>
+      <classifier>mule-plugin</classifier>
+      <type>mule-plugin</type>
+    </dependency>
+  </dependencies>
+</project>
+
+
