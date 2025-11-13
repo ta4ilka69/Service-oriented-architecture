@@ -18,6 +18,40 @@
     <mule.wsc.connector.version>1.6.8</mule.wsc.connector.version>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>mulesoft-public</id>
+      <name>MuleSoft Public</name>
+      <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+    <repository>
+      <id>mulesoft-releases</id>
+      <name>MuleSoft Releases</name>
+      <url>https://repository.mulesoft.org/nexus/content/repositories/releases/</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>mulesoft-public-plugins</id>
+      <name>MuleSoft Public Plugins</name>
+      <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>mulesoft-releases-plugins</id>
+      <name>MuleSoft Releases Plugins</name>
+      <url>https://repository.mulesoft.org/nexus/content/repositories/releases/</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
   <build>
     <plugins>
       <plugin>
