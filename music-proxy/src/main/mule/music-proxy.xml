@@ -37,15 +37,17 @@ ns soapenv http://schemas.xmlsoap.org/soap/envelope/
 ns mus http://music.soa.itmo.ru/
 var q = attributes.queryParams default {}
 fun arr(v) = if (v is Array) v else if (v is String) [v] else []
+var sorts   = arr(q.sort)   filter ((s) -> s != null and s != "")
+var filters = arr(q.filter) filter ((f) -> f != null and f != "")
 ---
 soapenv#Envelope: {
   soapenv#Header: {},
   soapenv#Body: {
     mus#ListMusicBands: {
-      mus#sort:   arr(q.sort),
-      (mus#page: (q.page as Number)) if (q.page? and q.page != ""),
-      (mus#size: (q.size as Number)) if (q.size? and q.size != ""),
-      mus#filter: arr(q.filter)
+      (sort: sorts) if (sizeOf(sorts) > 0),
+      (page: (q.page as Number)) if (q.page? and q.page != ""),
+      (size: (q.size as Number)) if (q.size? and q.size != ""),
+      (filter: filters) if (sizeOf(filters) > 0)
     }
   }
 }]]></ee:set-payload>
