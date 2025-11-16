@@ -12,7 +12,7 @@
 						http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config"
 		doc:id="fbbe8347-79a3-4b5d-a53d-a81f379cc442">
-		<http:listener-connection host="localhost" port="5300" protocol="HTTPS">
+		<http:listener-connection host="localhost" port="5369" protocol="HTTPS">
 			<tls:context>
 				<tls:key-store type="pkcs12" path="server2.p12" alias="server2"
 					keyPassword="q23886000" password="q23886000" />
@@ -730,14 +730,17 @@ output application/xml
 			</on-error-continue>
 		</error-handler>
 	</flow>
-	
+
 	<flow name="deleteAllWithDescriptionFlow" doc:id="delete-all-with-description-flow">
-		<http:listener doc:name="Listener DELETE /all-with-description" doc:id="listener-delete-all-with-description"
-			config-ref="HTTP_Listener_config" path="/music-bands/all-with-description" allowedMethods="DELETE">
+		<http:listener doc:name="Listener DELETE /all-with-description"
+			doc:id="listener-delete-all-with-description"
+			config-ref="HTTP_Listener_config" path="/music-bands/all-with-description"
+			allowedMethods="DELETE">
 			<http:response statusCode="#[vars.httpStatus default 204]" />
 			<http:error-response statusCode="#[vars.httpStatus default 500]" />
 		</http:listener>
-		<ee:transform doc:name="Build SOAP DeleteAllWithDescription Request" doc:id="transform-delete-all-with-description">
+		<ee:transform doc:name="Build SOAP DeleteAllWithDescription Request"
+			doc:id="transform-delete-all-with-description">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/xml
@@ -767,7 +770,8 @@ soapenv#Envelope: {
 				<http:success-status-code-validator values="200..599" />
 			</http:response-validator>
 		</http:request>
-		<ee:transform doc:name="Process SOAP DeleteAllWithDescription Response" doc:id="process-delete-all-with-description-response">
+		<ee:transform doc:name="Process SOAP DeleteAllWithDescription Response"
+			doc:id="process-delete-all-with-description-response">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/xml
@@ -828,14 +832,17 @@ output application/xml
 			</on-error-continue>
 		</error-handler>
 	</flow>
-	
+
 	<flow name="deleteOneWithGenreFlow" doc:id="delete-one-with-genre-flow">
-		<http:listener doc:name="Listener DELETE /one-with-genre" doc:id="listener-delete-one-with-genre"
-			config-ref="HTTP_Listener_config" path="/music-bands/one-with-genre" allowedMethods="DELETE">
+		<http:listener doc:name="Listener DELETE /one-with-genre"
+			doc:id="listener-delete-one-with-genre"
+			config-ref="HTTP_Listener_config" path="/music-bands/one-with-genre"
+			allowedMethods="DELETE">
 			<http:response statusCode="#[vars.httpStatus default 204]" />
 			<http:error-response statusCode="#[vars.httpStatus default 500]" />
 		</http:listener>
-		<ee:transform doc:name="Build SOAP DeleteOneWithGenre Request" doc:id="transform-delete-one-with-genre">
+		<ee:transform doc:name="Build SOAP DeleteOneWithGenre Request"
+			doc:id="transform-delete-one-with-genre">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/xml
@@ -865,7 +872,8 @@ soapenv#Envelope: {
 				<http:success-status-code-validator values="200..599" />
 			</http:response-validator>
 		</http:request>
-		<ee:transform doc:name="Process SOAP DeleteOneWithGenre Response" doc:id="process-delete-one-with-genre-response">
+		<ee:transform doc:name="Process SOAP DeleteOneWithGenre Response"
+			doc:id="process-delete-one-with-genre-response">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/xml
@@ -903,6 +911,105 @@ else if (payload.soap#Envelope.soap#Body.soap#Fault?)
   (payload.soap#Envelope.soap#Body.soap#Fault.detail.ns2#error.code as Number default 500)
 else 
   204]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<error-handler>
+			<on-error-continue doc:name="On Error" type="ANY">
+				<ee:transform doc:name="Build error response">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  error: {
+    code: 500,
+    message: "Internal Server Error"
+  }
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+
+	<flow name="countBestAlbumFlow" doc:id="count-best-album-flow">
+		<http:listener doc:name="Listener GET /count-best-album" doc:id="listener-count-best-album"
+			config-ref="HTTP_Listener_config" path="/music-bands/count-best-album"
+			allowedMethods="GET">
+			<http:response statusCode="#[vars.httpStatus default 200]" />
+		</http:listener>
+		<ee:transform doc:name="Build SOAP CountBestAlbum Request"
+			doc:id="transform-count-best-album">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns soapenv http://schemas.xmlsoap.org/soap/envelope/
+ns mus http://music.soa.itmo.ru/
+var qs = (attributes.queryString default "") as String
+fun firstParam(str, name) =
+  ((str splitBy "&")
+    filter ((p) -> p startsWith (name ++ "="))
+    map ((p) -> p[(p indexOf "=") + 1 to -1]))[0] default null
+var name = firstParam(qs, "albumName")
+var tracks = firstParam(qs, "albumTracks")
+---
+soapenv#Envelope: {
+  soapenv#Header: {},
+  soapenv#Body: {
+    mus#CountBestAlbum: {
+      (albumName: name) if (name != null),
+      (albumTracks: tracks) if (tracks != null)
+    }
+  }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request SOAP Service"
+			doc:id="request-count-best-album" config-ref="soaprequest"
+			path="/MusicBandSoapService" responseTimeout="30000">
+			<http:response-validator>
+				<http:success-status-code-validator values="200..599" />
+			</http:response-validator>
+		</http:request>
+		<ee:transform doc:name="Process SOAP CountBestAlbum Response"
+			doc:id="process-count-best-album-response">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns soap http://schemas.xmlsoap.org/soap/envelope/
+ns ns2 http://music.soa.itmo.ru/
+---
+if (payload.soap#Envelope.soap#Body.soap#Fault?) 
+  do {
+    var faultDetail = payload.soap#Envelope.soap#Body.soap#Fault.detail.ns2#error
+    var errorCode = faultDetail.code as Number default 500
+    var errorMessage = faultDetail.message default "Internal Server Error"
+    ---
+    {
+      error: {
+        code: errorCode,
+        message: errorMessage
+      }
+    }
+  }
+else 
+  {
+    count: payload.soap#Envelope.soap#Body.ns2#CountBestAlbumResponse.count
+  }]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="httpStatus"><![CDATA[%dw 2.0
+output application/java
+ns soap http://schemas.xmlsoap.org/soap/envelope/
+ns ns2 http://music.soa.itmo.ru/
+---
+if (payload.soap#Envelope.soap#Body.soap#Fault?) 
+  (payload.soap#Envelope.soap#Body.soap#Fault.detail.ns2#error.code as Number default 500)
+else 
+  200]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<error-handler>
