@@ -3,3 +3,7 @@ music-service/target/
 grammy-service/target/
 .metadata/
 .mule/
+services/
+.tooling/
+.tooling-apps-cache/
+.tooling-apps-cache/

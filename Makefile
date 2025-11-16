@@ -1,3 +1,7 @@
+INST_ROOT ?= ./services
+WILDFLY_HOME ?= ./wildfly-30.0.0.Final/wildfly-30.0.0.Final
+PASS ?= q23886000
+
 config:
 	mkdir -p $(INST_ROOT)/service1
 	mkdir -p $(INST_ROOT)/service2

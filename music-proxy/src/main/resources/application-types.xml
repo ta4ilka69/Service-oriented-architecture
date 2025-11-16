@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="Getall" format="json">
+      <types:shape format="weave" example="examples/getall.json"><![CDATA[%dw 2.0
+
+type Getall = {|
+  queryParams: {|
+    sort: Array<String>, 
+    page: String, 
+    size: String, 
+    filter: Array<String>
+  |}
+|} {"example": "{\\\"queryParams\\\":{\\\"sort\\\":[\\\"name\\\"],\\\"page\\\":\\\"1\\\",\\\"size\\\":\\\"10\\\",\\\"filter\\\":[\\\"name@=a\\\"]}}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#d0c3e11b-c479-4ea7-a502-dd2359a6751b">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="Getall"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
