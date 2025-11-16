@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<musicBand>
+	<name>string</name>
+	<coordinates>
+		<x>-974.999999</x>
+		<y>1</y>
+	</coordinates>
+	<numberOfParticipants>1</numberOfParticipants>
+	<albumsCount>1</albumsCount>
+	<description>string</description>
+	<genre>PSYCHEDELIC_CLOUD_RAP</genre>
+	<album>
+		<name>string</name>
+		<tracks>1</tracks>
+	</album>
+</musicBand>

@@ -98,7 +98,7 @@ if (payload.soap#Envelope.soap#Body.soap#Fault?)
   }
 else 
   // Success response - extract music bands list
-  payload.soap#Envelope.soap#Body.ns2#ListMusicBandsResponse]]></ee:set-payload>
+  { musicBands: payload.soap#Envelope.soap#Body.ns2#ListMusicBandsResponse.musicBands }]]></ee:set-payload>
 			</ee:message>
 			<ee:variables>
 				<ee:set-variable variableName="httpStatus"><![CDATA[%dw 2.0
@@ -196,7 +196,15 @@ if (payload.soap#Envelope.soap#Body.soap#Fault?)
     }
   }
 else 
-  payload.soap#Envelope.soap#Body.ns2#GetMusicBandByIdResponse.musicBandAllSchema]]></ee:set-payload>
+  do {
+    var band = payload.soap#Envelope.soap#Body.ns2#GetMusicBandByIdResponse.musicBandAllSchema
+    ---
+    {
+      musicBandAllSchema: {
+        (band mapObject ((value, key) -> (key): value))
+      }
+    }
+  }]]></ee:set-payload>
 			</ee:message>
 			<ee:variables>
 				<ee:set-variable variableName="httpStatus"><![CDATA[%dw 2.0
@@ -294,7 +302,15 @@ if (payload.soap#Envelope.soap#Body.soap#Fault?)
     }
   }
 else 
-  payload.soap#Envelope.soap#Body.ns2#CreateMusicBandResponse.musicBandAllSchema]]></ee:set-payload>
+  do {
+    var band = payload.soap#Envelope.soap#Body.ns2#CreateMusicBandResponse.musicBandAllSchema
+    ---
+    {
+      musicBandAllSchema: {
+        (band mapObject ((value, key) -> (key): value))
+      }
+    }
+  }]]></ee:set-payload>
 			</ee:message>
 			<ee:variables>
 				<ee:set-variable variableName="httpStatus"><![CDATA[%dw 2.0
