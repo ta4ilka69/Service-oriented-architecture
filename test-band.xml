@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <musicBand>
-	<numberOfParticipants>1mkmk</numberOfParticipants>
-	<albumsCount>20</albumsCount>
+	<name>name</name>
+	<coordinates>
+		<x>-974</x>
+		<y>52</y>
+	</coordinates>
+	<numberOfParticipants>1</numberOfParticipants>
+	<albumsCount>1</albumsCount>
+	<description>string</description>
+	<album>
+		<name>somealbum</name>
+		<tracks>15</tracks>
+	</album>
+	<genre>PSYCHEDELIC_CLOUD_RAP</genre>
 </musicBand>
