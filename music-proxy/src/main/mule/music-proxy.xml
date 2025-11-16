@@ -9,17 +9,15 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="fbbe8347-79a3-4b5d-a53d-a81f379cc442" >
 		<http:listener-connection host="localhost" port="5300" protocol="HTTPS">
 			<tls:context >
-				<tls:trust-store path="truststore.jks" password="q23886000" type="jks"/>
 				<tls:key-store type="pkcs12" path="server2.p12" alias="server2" keyPassword="q23886000" password="q23886000"/>
 			</tls:context>
 		</http:listener-connection>
 	</http:listener-config>
-	<tls:context name="TLS_Context" doc:name="TLS Context" doc:id="b4445f1e-fd4a-4e19-bf1f-8f4b7da632e8" >
-		<tls:trust-store path="truststore.jks" password="q23886000" type="jks" />
-		<tls:key-store type="pkcs12" path="server2.p12" alias="server2" keyPassword="q23886000" password="q23886000" />
+	<tls:context name="TLS_SOAP" doc:name="TLS Context" doc:id="b4445f1e-fd4a-4e19-bf1f-8f4b7da632e8" >
+		<tls:trust-store path="truststore.jks" password="q23886000" type="jks"/>
 	</tls:context>
-	<http:request-config name="soaprequest" doc:name="HTTP Request configuration" doc:id="ff8f7f84-042d-4f5c-8b50-b17db0730b59" body="#[payload]" uri-params="" path="" targetValue="#[payload]" correlationId="" query-params="" headers="" outputMimeType="" method="GET" url="" target="" outputEncoding="" config-ref="" >
-		<http:request-connection host="localhost" port="5252" tlsContext="TLS_Context" />
+	<http:request-config name="soaprequest" doc:name="HTTP Request configuration" doc:id="ff8f7f84-042d-4f5c-8b50-b17db0730b59">
+		<http:request-connection host="localhost" port="5252" protocol="HTTPS" tlsContext="TLS_SOAP" />
 	</http:request-config>
 	<flow name="music-proxyFlow" doc:id="f2e6d6d2-76dd-4526-b0b2-cc9f88a91ecc" >
 		<http:listener doc:name="Listener" doc:id="3eb15ded-2aac-450e-963c-c8f76acd2da8" config-ref="HTTP_Listener_config" path="/music-bands">
@@ -35,8 +33,8 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/xml
-ns soapenv "http://schemas.xmlsoap.org/soap/envelope/"
-ns mus "http://music.soa.itmo.ru/"
+ns soapenv http://schemas.xmlsoap.org/soap/envelope/
+ns mus http://music.soa.itmo.ru/
 var q = attributes.queryParams default {}
 fun arr(v) = if (v is Array) v else if (v is String) [v] else []
 ---
@@ -62,5 +60,19 @@ soapenv#Envelope: {
 
 }]]]></http:headers>
 		</http:request>
+		<error-handler >
+			<on-error-propagate doc:name="On Error">
+				<ee:transform doc:name="Build error response">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: (error.description default ((error.cause as String) default "Internal Server Error"))
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
 	</flow>
 </mule>
