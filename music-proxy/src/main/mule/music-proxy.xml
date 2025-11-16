@@ -368,6 +368,146 @@ output application/xml
 			</on-error-continue>
 		</error-handler>
 	</flow>
+
+	<flow name="patchMusicBandFlow" doc:id="patch-music-band-flow">
+		<http:listener doc:name="Listener PATCH /{id}" doc:id="listener-patch"
+			config-ref="HTTP_Listener_config" path="/music-bands/{id}" allowedMethods="PATCH">
+			<http:response statusCode="#[vars.httpStatus default 200]">
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/xml"
+}]]]></http:headers>
+			</http:response>
+			<http:error-response statusCode="#[vars.httpStatus default 500]">
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/xml"
+}]]]></http:headers>
+			</http:error-response>
+		</http:listener>
+		<ee:transform doc:name="Build SOAP Patch Request" doc:id="transform-patch">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns soapenv http://schemas.xmlsoap.org/soap/envelope/
+ns mus http://music.soa.itmo.ru/
+---
+soapenv#Envelope: {
+  soapenv#Header: {},
+  soapenv#Body: {
+    mus#PatchMusicBand: {
+      id: attributes.uriParams.id,
+      musicBand: payload.musicBand
+    }
+  }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request SOAP Service"
+			doc:id="request-patch" config-ref="soaprequest"
+			path="/MusicBandSoapService" responseTimeout="30000">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "text/xml; charset=UTF-8",
+	"Accept": "application/xml"
+}]]]></http:headers>
+			<http:response-validator>
+				<http:success-status-code-validator values="200..599" />
+			</http:response-validator>
+		</http:request>
+		<ee:transform doc:name="Process SOAP Response" doc:id="process-patch-response">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns soap http://schemas.xmlsoap.org/soap/envelope/
+ns ns2 http://music.soa.itmo.ru/
+---
+if (payload.soap#Envelope.soap#Body.soap#Fault?) 
+  do {
+    var faultDetail = payload.soap#Envelope.soap#Body.soap#Fault.detail.ns2#error
+    var errorCode = faultDetail.code as Number default 500
+    var errorMessage = faultDetail.message default "Internal Server Error"
+    ---
+    {
+      error: {
+        code: errorCode,
+        message: errorMessage
+      }
+    }
+  }
+else 
+  do {
+    var band = payload.soap#Envelope.soap#Body.ns2#PatchMusicBandResponse.musicBandAllSchema
+    ---
+    {
+      musicBandAllSchema: {
+        (band mapObject ((value, key) -> (key): value))
+      }
+    }
+  }]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="httpStatus"><![CDATA[%dw 2.0
+output application/java
+ns soap http://schemas.xmlsoap.org/soap/envelope/
+ns ns2 http://music.soa.itmo.ru/
+---
+if (payload.soap#Envelope.soap#Body.soap#Fault?) 
+  (payload.soap#Envelope.soap#Body.soap#Fault.detail.ns2#error.code as Number default 500)
+else 
+  200]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<error-handler>
+			<on-error-continue doc:name="On Error" type="ANY">
+				<ee:transform doc:name="Build error response">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  error: {
+    code: 500,
+    message: "Internal Server Error"
+  }
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+
+	<flow name="invalidPutMusicBandsFlow" doc:id="invalid-put-music-bands-flow">
+		<http:listener doc:name="Listener PUT / (invalid)" doc:id="listener-invalid-put"
+			config-ref="HTTP_Listener_config" path="/music-bands" allowedMethods="PUT">
+			<http:response statusCode="500">
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/xml"
+}]]]></http:headers>
+			</http:response>
+		</http:listener>
+		<ee:transform doc:name="Build 500 response for invalid PUT" doc:id="transform-invalid-put">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  error: {
+    code: 500,
+    message: "Internal Server Error"
+  }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
 	<flow name="createMusicBandFlow" doc:id="create-music-band-flow">
 		<http:listener doc:name="Listener POST /" doc:id="listener-create"
 			config-ref="HTTP_Listener_config" path="/music-bands" allowedMethods="POST">
