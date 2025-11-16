@@ -1,37 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="fbbe8347-79a3-4b5d-a53d-a81f379cc442" >
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+						http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+						http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+						http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config"
+		doc:id="fbbe8347-79a3-4b5d-a53d-a81f379cc442">
 		<http:listener-connection host="localhost" port="5300" protocol="HTTPS">
-			<tls:context >
-				<tls:key-store type="pkcs12" path="server2.p12" alias="server2" keyPassword="q23886000" password="q23886000"/>
+			<tls:context>
+				<tls:key-store type="pkcs12" path="server2.p12" alias="server2"
+					keyPassword="q23886000" password="q23886000" />
 			</tls:context>
 		</http:listener-connection>
 	</http:listener-config>
-	<tls:context name="TLS_SOAP" doc:name="TLS Context" doc:id="b4445f1e-fd4a-4e19-bf1f-8f4b7da632e8" >
-		<tls:trust-store path="truststore.jks" password="q23886000" type="jks"/>
+	<tls:context name="TLS_SOAP" doc:name="TLS Context"
+		doc:id="b4445f1e-fd4a-4e19-bf1f-8f4b7da632e8">
+		<tls:trust-store path="truststore.jks" password="q23886000" type="jks" />
 	</tls:context>
-	<http:request-config name="soaprequest" doc:name="HTTP Request configuration" doc:id="ff8f7f84-042d-4f5c-8b50-b17db0730b59">
+	<http:request-config name="soaprequest" doc:name="HTTP Request configuration"
+		doc:id="ff8f7f84-042d-4f5c-8b50-b17db0730b59">
 		<http:request-connection host="localhost" port="5252" protocol="HTTPS" tlsContext="TLS_SOAP" />
 	</http:request-config>
-	<flow name="music-proxyFlow" doc:id="f2e6d6d2-76dd-4526-b0b2-cc9f88a91ecc" >
-		<http:listener doc:name="Listener" doc:id="3eb15ded-2aac-450e-963c-c8f76acd2da8" config-ref="HTTP_Listener_config" path="/music-bands">
-			<http:response >
-				<http:headers ><![CDATA[#[output application/java
+	<flow name="music-proxyFlow" doc:id="f2e6d6d2-76dd-4526-b0b2-cc9f88a91ecc">
+		<http:listener doc:name="Listener" doc:id="3eb15ded-2aac-450e-963c-c8f76acd2da8"
+			config-ref="HTTP_Listener_config" path="/music-bands">
+			<http:response statusCode="#[vars.httpStatus default 200]">
+				<http:headers><![CDATA[#[output application/java
 ---
 {
 	"Content-Type" : "application/xml"
 }]]]></http:headers>
 			</http:response>
 		</http:listener>
-		<ee:transform doc:name="Transform Message" doc:id="d0c3e11b-c479-4ea7-a502-dd2359a6751b" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message" doc:id="d0c3e11b-c479-4ea7-a502-dd2359a6751b">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/xml
 ns soapenv http://schemas.xmlsoap.org/soap/envelope/
 ns mus http://music.soa.itmo.ru/
@@ -53,26 +62,73 @@ soapenv#Envelope: {
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<http:request method="POST" doc:name="Request test" doc:id="6764be02-a723-4f4d-85d7-87bbf090ad83" config-ref="soaprequest" path="/MusicBandSoapService">
-			<http:headers ><![CDATA[#[output application/java
+		<http:request method="POST" doc:name="Request SOAP Service"
+			doc:id="6764be02-a723-4f4d-85d7-87bbf090ad83" config-ref="soaprequest"
+			path="/MusicBandSoapService" responseTimeout="30000">
+			<http:headers><![CDATA[#[output application/java
 ---
 {
 	"Content-Type" : "text/xml; charset=UTF-8",
 	"Accept": "application/xml"
-
 }]]]></http:headers>
+			<http:response-validator>
+				<http:success-status-code-validator values="200..599" />
+			</http:response-validator>
 		</http:request>
-		<error-handler >
-			<on-error-propagate doc:name="On Error">
+		<ee:transform doc:name="Process SOAP Response" doc:id="process-response">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns soap http://schemas.xmlsoap.org/soap/envelope/
+ns ns2 http://music.soa.itmo.ru/
+---
+if (payload.soap#Envelope.soap#Body.soap#Fault?) 
+  // SOAP Fault detected - extract error info
+  do {
+    var faultDetail = payload.soap#Envelope.soap#Body.soap#Fault.detail.ns2#error
+    var errorCode = faultDetail.code as Number default 500
+    var errorMessage = faultDetail.message default "Internal Server Error"
+    ---
+    {
+      error: {
+        code: errorCode,
+        message: errorMessage
+      }
+    }
+  }
+else 
+  // Success response - extract music bands list
+  payload.soap#Envelope.soap#Body.ns2#ListMusicBandsResponse]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="httpStatus"><![CDATA[%dw 2.0
+output application/java
+ns soap http://schemas.xmlsoap.org/soap/envelope/
+ns ns2 http://music.soa.itmo.ru/
+---
+if (payload.soap#Envelope.soap#Body.soap#Fault?) 
+  (payload.soap#Envelope.soap#Body.soap#Fault.detail.ns2#error.code as Number default 500)
+else 
+  200]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<error-handler>
+			<on-error-propagate doc:name="On Error" type="ANY">
 				<ee:transform doc:name="Build error response">
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
-output application/json
+output application/xml
 ---
 {
-  message: (error.description default ((error.cause as String) default "Internal Server Error"))
+  error: {
+    code: 500,
+    message: (error.description default "Internal Server Error")
+  }
 }]]></ee:set-payload>
 					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
 				</ee:transform>
 			</on-error-propagate>
 		</error-handler>
