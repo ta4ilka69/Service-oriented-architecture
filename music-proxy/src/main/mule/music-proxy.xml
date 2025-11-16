@@ -133,4 +133,200 @@ output application/xml
 			</on-error-propagate>
 		</error-handler>
 	</flow>
+
+	<flow name="getMusicBandByIdFlow" doc:id="get-by-id-flow">
+		<http:listener doc:name="Listener GET /{id}" doc:id="listener-get-by-id"
+			config-ref="HTTP_Listener_config" path="/music-bands/{id}">
+			<http:response statusCode="#[vars.httpStatus default 200]">
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/xml"
+}]]]></http:headers>
+			</http:response>
+		</http:listener>
+		<ee:transform doc:name="Build SOAP GetById Request" doc:id="transform-get-by-id">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns soapenv http://schemas.xmlsoap.org/soap/envelope/
+ns mus http://music.soa.itmo.ru/
+---
+soapenv#Envelope: {
+  soapenv#Header: {},
+  soapenv#Body: {
+    mus#GetMusicBandById: {
+      id: attributes.uriParams.id
+    }
+  }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request SOAP Service"
+			doc:id="request-get-by-id" config-ref="soaprequest"
+			path="/MusicBandSoapService" responseTimeout="30000">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "text/xml; charset=UTF-8",
+	"Accept": "application/xml"
+}]]]></http:headers>
+			<http:response-validator>
+				<http:success-status-code-validator values="200..599" />
+			</http:response-validator>
+		</http:request>
+		<ee:transform doc:name="Process SOAP Response" doc:id="process-get-by-id-response">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns soap http://schemas.xmlsoap.org/soap/envelope/
+ns ns2 http://music.soa.itmo.ru/
+---
+if (payload.soap#Envelope.soap#Body.soap#Fault?) 
+  do {
+    var faultDetail = payload.soap#Envelope.soap#Body.soap#Fault.detail.ns2#error
+    var errorCode = faultDetail.code as Number default 500
+    var errorMessage = faultDetail.message default "Internal Server Error"
+    ---
+    {
+      error: {
+        code: errorCode,
+        message: errorMessage
+      }
+    }
+  }
+else 
+  payload.soap#Envelope.soap#Body.ns2#GetMusicBandByIdResponse.musicBandAllSchema]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="httpStatus"><![CDATA[%dw 2.0
+output application/java
+ns soap http://schemas.xmlsoap.org/soap/envelope/
+ns ns2 http://music.soa.itmo.ru/
+---
+if (payload.soap#Envelope.soap#Body.soap#Fault?) 
+  (payload.soap#Envelope.soap#Body.soap#Fault.detail.ns2#error.code as Number default 500)
+else 
+  200]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<error-handler>
+			<on-error-propagate doc:name="On Error" type="ANY">
+				<ee:transform doc:name="Build error response">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  error: {
+    code: 500,
+    message: (error.description default "Internal Server Error")
+  }
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	
+	<flow name="createMusicBandFlow" doc:id="create-music-band-flow">
+		<http:listener doc:name="Listener POST /" doc:id="listener-create"
+			config-ref="HTTP_Listener_config" path="/music-bands" allowedMethods="POST">
+			<http:response statusCode="#[vars.httpStatus default 201]">
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/xml"
+}]]]></http:headers>
+			</http:response>
+		</http:listener>
+		<ee:transform doc:name="Build SOAP Create Request" doc:id="transform-create">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns soapenv http://schemas.xmlsoap.org/soap/envelope/
+ns mus http://music.soa.itmo.ru/
+---
+soapenv#Envelope: {
+  soapenv#Header: {},
+  soapenv#Body: {
+    mus#CreateMusicBand: {
+      musicBand: payload.musicBand
+    }
+  }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request SOAP Service"
+			doc:id="request-create" config-ref="soaprequest"
+			path="/MusicBandSoapService" responseTimeout="30000">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "text/xml; charset=UTF-8",
+	"Accept": "application/xml"
+}]]]></http:headers>
+			<http:response-validator>
+				<http:success-status-code-validator values="200..599" />
+			</http:response-validator>
+		</http:request>
+		<ee:transform doc:name="Process SOAP Response" doc:id="process-create-response">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns soap http://schemas.xmlsoap.org/soap/envelope/
+ns ns2 http://music.soa.itmo.ru/
+---
+if (payload.soap#Envelope.soap#Body.soap#Fault?) 
+  do {
+    var faultDetail = payload.soap#Envelope.soap#Body.soap#Fault.detail.ns2#error
+    var errorCode = faultDetail.code as Number default 500
+    var errorMessage = faultDetail.message default "Internal Server Error"
+    ---
+    {
+      error: {
+        code: errorCode,
+        message: errorMessage
+      }
+    }
+  }
+else 
+  payload.soap#Envelope.soap#Body.ns2#CreateMusicBandResponse.musicBandAllSchema]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="httpStatus"><![CDATA[%dw 2.0
+output application/java
+ns soap http://schemas.xmlsoap.org/soap/envelope/
+ns ns2 http://music.soa.itmo.ru/
+---
+if (payload.soap#Envelope.soap#Body.soap#Fault?) 
+  (payload.soap#Envelope.soap#Body.soap#Fault.detail.ns2#error.code as Number default 500)
+else 
+  201]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<error-handler>
+			<on-error-propagate doc:name="On Error" type="ANY">
+				<ee:transform doc:name="Build error response">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  error: {
+    code: 500,
+    message: (error.description default "Internal Server Error")
+  }
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
 </mule>
