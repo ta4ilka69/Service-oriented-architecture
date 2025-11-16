@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     port: 5173,
     proxy: {
       '/music-bands': {
-        target: 'https://localhost:5252',
+        target: 'https://localhost:5369',
         changeOrigin: true,
         secure: false,
       },

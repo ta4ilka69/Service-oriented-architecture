@@ -29,7 +29,7 @@ public class GrammyController {
 
     private final RestTemplate restTemplate;
 
-    @Value("${music.service.base-url:https://localhost:5252}")
+    @Value("${music.service.base-url:https://localhost:5369}")
     private String musicServiceBaseUrl;
 
     public GrammyController(RestTemplate restTemplate) {

@@ -6,3 +6,4 @@ grammy-service/target/
 services/
 .tooling/
 .tooling-apps-cache/
+test-band.xml
