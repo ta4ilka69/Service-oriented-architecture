@@ -1033,4 +1033,22 @@ output application/xml
 			</on-error-continue>
 		</error-handler>
 	</flow>
+
+	<!-- Global OPTIONS handler for CORS preflight requests -->
+	<flow name="globalOptionsHandler" doc:id="global-options-handler">
+		<http:listener doc:name="OPTIONS /*" doc:id="listener-options"
+			config-ref="HTTP_Listener_config" path="/*" allowedMethods="OPTIONS">
+			<http:response statusCode="200">
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Access-Control-Allow-Origin": "*",
+	"Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+	"Access-Control-Allow-Headers": "Content-Type, Accept",
+	"Access-Control-Max-Age": "86400"
+}]]]></http:headers>
+			</http:response>
+		</http:listener>
+		<set-payload value="" doc:name="Empty Response" />
+	</flow>
 </mule>
