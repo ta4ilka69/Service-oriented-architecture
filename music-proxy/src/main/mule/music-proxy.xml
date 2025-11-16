@@ -113,7 +113,7 @@ else
 			</ee:variables>
 		</ee:transform>
 		<error-handler>
-			<on-error-propagate doc:name="On Error" type="ANY">
+			<on-error-continue doc:name="On Error" type="ANY">
 				<ee:transform doc:name="Build error response">
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
@@ -122,7 +122,7 @@ output application/xml
 {
   error: {
     code: 500,
-    message: (error.description default "Internal Server Error")
+    message: "Internal Server Error"
   }
 }]]></ee:set-payload>
 					</ee:message>
@@ -130,7 +130,7 @@ output application/xml
 						<ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
-			</on-error-propagate>
+			</on-error-continue>
 		</error-handler>
 	</flow>
 
@@ -219,7 +219,7 @@ else
 			</ee:variables>
 		</ee:transform>
 		<error-handler>
-			<on-error-propagate doc:name="On Error" type="ANY">
+			<on-error-continue doc:name="On Error" type="ANY">
 				<ee:transform doc:name="Build error response">
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
@@ -228,7 +228,7 @@ output application/xml
 {
   error: {
     code: 500,
-    message: (error.description default "Internal Server Error")
+    message: "Internal Server Error"
   }
 }]]></ee:set-payload>
 					</ee:message>
@@ -236,7 +236,7 @@ output application/xml
 						<ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
-			</on-error-propagate>
+			</on-error-continue>
 		</error-handler>
 	</flow>
 	
@@ -250,6 +250,13 @@ output application/xml
 	"Content-Type" : "application/xml"
 }]]]></http:headers>
 			</http:response>
+			<http:error-response statusCode="#[vars.httpStatus default 500]">
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/xml"
+}]]]></http:headers>
+			</http:error-response>
 		</http:listener>
 		<ee:transform doc:name="Build SOAP Create Request" doc:id="transform-create">
 			<ee:message>
@@ -325,7 +332,7 @@ else
 			</ee:variables>
 		</ee:transform>
 		<error-handler>
-			<on-error-propagate doc:name="On Error" type="ANY">
+			<on-error-continue doc:name="On Error" type="ANY">
 				<ee:transform doc:name="Build error response">
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
@@ -334,7 +341,7 @@ output application/xml
 {
   error: {
     code: 500,
-    message: (error.description default "Internal Server Error")
+    message: "Internal Server Error"
   }
 }]]></ee:set-payload>
 					</ee:message>
@@ -342,7 +349,7 @@ output application/xml
 						<ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
-			</on-error-propagate>
+			</on-error-continue>
 		</error-handler>
 	</flow>
 </mule>

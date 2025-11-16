@@ -1,5 +1,6 @@
 package ru.itmo.soa.music.repo;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -161,6 +162,7 @@ public class MusicBandRepository {
     private void validateCreateUpdate(MusicBandCreateUpdate dto) {
         if (dto.getName() == null || dto.getName().isBlank()) throw new BadRequestException("Field 'name' is invalid or missing");
         if (dto.getCoordinates() == null) throw new BadRequestException("Field 'coordinates' is invalid or missing");
+        validateXFractionDigits(dto.getCoordinates().getX());
         if (dto.getCoordinates().getX() == null || dto.getCoordinates().getX() <= -975) throw new BadRequestException("Field 'coordinates.x' must be greater than -975");
         if (dto.getCoordinates().getY() == null || dto.getCoordinates().getY() < 1) throw new BadRequestException("Field 'coordinates.y' must be integer >= 1");
         if (dto.getNumberOfParticipants() == null || dto.getNumberOfParticipants() < 1) throw new BadRequestException("Field 'numberOfParticipants' must be integer >= 1");
@@ -176,6 +178,7 @@ public class MusicBandRepository {
     private void validateEntity(MusicBand e) {
         if (e.getName() == null || e.getName().isBlank()) throw new BadRequestException("Field 'name' is invalid or missing");
         if (e.getCoordinates() == null) throw new BadRequestException("Field 'coordinates' is invalid or missing");
+        validateXFractionDigits(e.getCoordinates().getX());
         if (e.getCoordinates().getX() == null || e.getCoordinates().getX() <= -975) throw new BadRequestException("Field 'coordinates.x' must be greater than -975");
         if (e.getCoordinates().getY() == null || e.getCoordinates().getY() < 1) throw new BadRequestException("Field 'coordinates.y' must be integer >= 1");
         if (e.getNumberOfParticipants() == null || e.getNumberOfParticipants() < 1) throw new BadRequestException("Field 'numberOfParticipants' must be integer >= 1");
@@ -185,6 +188,15 @@ public class MusicBandRepository {
         if (e.getBestAlbum() != null) {
             if (e.getBestAlbum().getName() == null || e.getBestAlbum().getName().isBlank()) throw new BadRequestException("Field 'bestAlbum.name' is invalid or missing");
             if (e.getBestAlbum().getTracks() == null || e.getBestAlbum().getTracks() < 1) throw new BadRequestException("Field 'bestAlbum.tracks' must be integer >= 1");
+        }
+    }
+
+    private void validateXFractionDigits(Double x) {
+        if (x == null) return;
+        BigDecimal bd = BigDecimal.valueOf(x).stripTrailingZeros();
+        int scale = Math.max(0, bd.scale());
+        if (scale > 5) {
+            throw new BadRequestException("Field 'coordinates.x' must have at most 5 digits after decimal");
         }
     }
 
