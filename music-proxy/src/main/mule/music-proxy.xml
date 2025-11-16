@@ -29,7 +29,7 @@
 	</http:request-config>
 	<flow name="music-proxyFlow" doc:id="f2e6d6d2-76dd-4526-b0b2-cc9f88a91ecc">
 		<http:listener doc:name="Listener" doc:id="3eb15ded-2aac-450e-963c-c8f76acd2da8"
-			config-ref="HTTP_Listener_config" path="/music-bands">
+			config-ref="HTTP_Listener_config" path="/music-bands" allowedMethods="GET">
 			<http:response statusCode="#[vars.httpStatus default 200]">
 				<http:headers><![CDATA[#[output application/java
 ---
@@ -44,10 +44,25 @@
 output application/xml
 ns soapenv http://schemas.xmlsoap.org/soap/envelope/
 ns mus http://music.soa.itmo.ru/
-var q = attributes.queryParams default {}
+var q  = attributes.queryParams default {}
 fun arr(v) = if (v is Array) v else if (v is String) [v] else []
-var sorts   = arr(q.sort)   filter ((s) -> s != null and s != "")
-var filters = arr(q.filter) filter ((f) -> f != null and f != "")
+var qs = (attributes.queryString default "") as String
+fun extractParams(qsStr, name) =
+  (qsStr splitBy "&")
+    filter ((p) -> p startsWith (name ++ "="))
+    map ((p) -> p[(p indexOf "=") + 1 to -1])
+var sortsRaw =
+  if (qs contains "sort=")
+    extractParams(qs, "sort")
+  else
+    arr(q.sort)
+var filtersRaw =
+  if (qs contains "filter=")
+    extractParams(qs, "filter")
+  else
+    arr(q.filter)
+var sorts   = sortsRaw      filter ((s) -> s != null and s != "")
+var filters = filtersRaw    filter ((f) -> f != null and f != "")
 ---
 soapenv#Envelope: {
   soapenv#Header: {},
@@ -136,7 +151,7 @@ output application/xml
 
 	<flow name="getMusicBandByIdFlow" doc:id="get-by-id-flow">
 		<http:listener doc:name="Listener GET /{id}" doc:id="listener-get-by-id"
-			config-ref="HTTP_Listener_config" path="/music-bands/{id}">
+			config-ref="HTTP_Listener_config" path="/music-bands/{id}" allowedMethods="GET">
 			<http:response statusCode="#[vars.httpStatus default 200]">
 				<http:headers><![CDATA[#[output application/java
 ---
@@ -239,7 +254,120 @@ output application/xml
 			</on-error-continue>
 		</error-handler>
 	</flow>
-	
+
+	<flow name="replaceMusicBandFlow" doc:id="replace-music-band-flow">
+		<http:listener doc:name="Listener PUT /{id}" doc:id="listener-replace"
+			config-ref="HTTP_Listener_config" path="/music-bands/{id}" allowedMethods="PUT">
+			<http:response statusCode="#[vars.httpStatus default 200]">
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/xml"
+}]]]></http:headers>
+			</http:response>
+			<http:error-response statusCode="#[vars.httpStatus default 500]">
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/xml"
+}]]]></http:headers>
+			</http:error-response>
+		</http:listener>
+		<ee:transform doc:name="Build SOAP Replace Request" doc:id="transform-replace">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns soapenv http://schemas.xmlsoap.org/soap/envelope/
+ns mus http://music.soa.itmo.ru/
+---
+soapenv#Envelope: {
+  soapenv#Header: {},
+  soapenv#Body: {
+    mus#ReplaceMusicBand: {
+      id: attributes.uriParams.id,
+      musicBand: payload.musicBand
+    }
+  }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request SOAP Service"
+			doc:id="request-replace" config-ref="soaprequest"
+			path="/MusicBandSoapService" responseTimeout="30000">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "text/xml; charset=UTF-8",
+	"Accept": "application/xml"
+}]]]></http:headers>
+			<http:response-validator>
+				<http:success-status-code-validator values="200..599" />
+			</http:response-validator>
+		</http:request>
+		<ee:transform doc:name="Process SOAP Response" doc:id="process-replace-response">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns soap http://schemas.xmlsoap.org/soap/envelope/
+ns ns2 http://music.soa.itmo.ru/
+---
+if (payload.soap#Envelope.soap#Body.soap#Fault?) 
+  do {
+    var faultDetail = payload.soap#Envelope.soap#Body.soap#Fault.detail.ns2#error
+    var errorCode = faultDetail.code as Number default 500
+    var errorMessage = faultDetail.message default "Internal Server Error"
+    ---
+    {
+      error: {
+        code: errorCode,
+        message: errorMessage
+      }
+    }
+  }
+else 
+  do {
+    var band = payload.soap#Envelope.soap#Body.ns2#ReplaceMusicBandResponse.musicBandAllSchema
+    ---
+    {
+      musicBandAllSchema: {
+        (band mapObject ((value, key) -> (key): value))
+      }
+    }
+  }]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="httpStatus"><![CDATA[%dw 2.0
+output application/java
+ns soap http://schemas.xmlsoap.org/soap/envelope/
+ns ns2 http://music.soa.itmo.ru/
+---
+if (payload.soap#Envelope.soap#Body.soap#Fault?) 
+  (payload.soap#Envelope.soap#Body.soap#Fault.detail.ns2#error.code as Number default 500)
+else 
+  200]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<error-handler>
+			<on-error-continue doc:name="On Error" type="ANY">
+				<ee:transform doc:name="Build error response">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  error: {
+    code: 500,
+    message: "Internal Server Error"
+  }
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
 	<flow name="createMusicBandFlow" doc:id="create-music-band-flow">
 		<http:listener doc:name="Listener POST /" doc:id="listener-create"
 			config-ref="HTTP_Listener_config" path="/music-bands" allowedMethods="POST">

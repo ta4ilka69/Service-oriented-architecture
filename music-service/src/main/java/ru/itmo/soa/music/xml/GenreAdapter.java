@@ -10,7 +10,8 @@ public class GenreAdapter extends XmlAdapter<String, Genre> {
     public Genre unmarshal(String v) {
         if (v == null) return null;
         try {
-            return Genre.valueOf(v);
+            String normalized = v.trim().toUpperCase();
+            return Genre.valueOf(normalized);
         } catch (IllegalArgumentException ex) {
             throw new IllegalArgumentException("Field 'genre' must be one of " + ALLOWED);
         }
