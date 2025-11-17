@@ -42,6 +42,13 @@ public class GrammyController {
             @RequestBody SingleSchema body
     ) {
         try {
+            // Validate input name (required, non-empty)
+            if (body == null || body.getName() == null || body.getName().isBlank()) {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_XML);
+                return new ResponseEntity<>(new ErrorResponse(400, "Bad Request"), headers, HttpStatus.BAD_REQUEST);
+            }
+
             // Validate that the band exists and read current albumsCount
             String url = musicServiceBaseUrl + "/music-bands/" + bandId;
 
@@ -92,6 +99,13 @@ public class GrammyController {
             @RequestBody ParticipantSchema body
     ) {
         try {
+            // Validate input name (required, non-empty)
+            if (body == null || body.getName() == null || body.getName().isBlank()) {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_XML);
+                return new ResponseEntity<>(new ErrorResponse(400, "Bad Request"), headers, HttpStatus.BAD_REQUEST);
+            }
+
             // Call music-service PATCH to increase numberOfParticipants by 1
             String url = musicServiceBaseUrl + "/music-bands/" + bandId;
 
