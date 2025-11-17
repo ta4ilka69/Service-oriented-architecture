@@ -128,6 +128,24 @@ else
 			</ee:variables>
 		</ee:transform>
 		<error-handler>
+			<on-error-continue doc:name="On HTTP connectivity" type="HTTP:CONNECTIVITY">
+				<ee:transform doc:name="Build 503 response">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  error: {
+    code: 503,
+    message: "Service Unavailable"
+  }
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus"><![CDATA[503]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
 			<on-error-continue doc:name="On Error" type="ANY">
 				<ee:transform doc:name="Build error response">
 					<ee:message>
@@ -234,6 +252,24 @@ else
 			</ee:variables>
 		</ee:transform>
 		<error-handler>
+			<on-error-continue doc:name="On HTTP connectivity" type="HTTP:CONNECTIVITY">
+				<ee:transform doc:name="Build 503 response">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  error: {
+    code: 503,
+    message: "Service Unavailable"
+  }
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus"><![CDATA[503]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
 			<on-error-continue doc:name="On Error" type="ANY">
 				<ee:transform doc:name="Build error response">
 					<ee:message>
