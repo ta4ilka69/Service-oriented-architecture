@@ -1,5 +1,6 @@
 package ru.itmo.soa.grammy.config;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -35,7 +36,10 @@ public class RestClientConfig {
 
     @Bean
     public XmlMapper xmlMapper() {
-        return new XmlMapper();
+        XmlMapper mapper = new XmlMapper();
+        // Не отправляем null-поля, чтобы не генерировать пустые теги вроде <albumsCount/>
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return mapper;
     }
 
     @Bean
